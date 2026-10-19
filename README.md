@@ -380,6 +380,10 @@ npm run verify:electron    # Electron 启动/关闭验证
 
 验证截图在 [`verify-shots/`](verify-shots/)。
 
+> `verify` / `verify:mobile` 需要先启动服务（`npm run start` 或 `npm run dev`）。
+> 导入测试默认读取 `%APPDATA%\Tick_Tick\TickTick.db`；也可用 `TICKTICK_DB` 指定路径，
+> 找不到数据库时会自动跳过。仓库不包含任何个人数据库快照。
+
 ---
 
 ## 逆向分析

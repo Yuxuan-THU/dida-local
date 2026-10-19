@@ -9,7 +9,11 @@ const { inspectTickTick, importTickTick } = await import('../server/importer.mjs
 const { getState } = await import('../server/store.mjs');
 const { closeDb } = await import('../server/db.mjs');
 
-const source = path.resolve('../verify/TickTick-copy.db');
+const source = process.env.TICKTICK_DB || path.join(process.env.APPDATA || '', 'Tick_Tick', 'TickTick.db');
+if (!fs.existsSync(source)) {
+  console.log(`Skipped: no TickTick database at ${source}. Set TICKTICK_DB to test import.`);
+  process.exit(0);
+}
 const preview = inspectTickTick(source);
 console.log('preview', preview);
 const started = Date.now();

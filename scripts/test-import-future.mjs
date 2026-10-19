@@ -7,8 +7,12 @@ if (fs.existsSync(dataDir)) fs.rmSync(dataDir, { recursive: true, force: true })
 const { importTickTick, inspectTickTick } = await import('../server/importer.mjs');
 const { getState } = await import('../server/store.mjs');
 const { closeDb } = await import('../server/db.mjs');
-const source = path.resolve('../verify/TickTick-copy.db');
-const fromDate = '2026-10-18';
+const source = process.env.TICKTICK_DB || path.join(process.env.APPDATA || '', 'Tick_Tick', 'TickTick.db');
+if (!fs.existsSync(source)) {
+  console.log(`Skipped: no TickTick database at ${source}. Set TICKTICK_DB to test import.`);
+  process.exit(0);
+}
+const fromDate = new Date().toISOString().slice(0, 10);
 const preview = inspectTickTick(source, { fromDate });
 const result = importTickTick(source, { fromDate, includeHabits: true, keepFilters: false });
 const state = getState();
@@ -30,4 +34,4 @@ const outcome = {
 console.log(JSON.stringify(outcome, null, 2));
 closeDb();
 fs.rmSync(dataDir, { recursive: true, force: true });
-if (outcome.tasks !== 23 || outcome.early !== 0 || state.filters.length !== 0) process.exit(1);
+if (outcome.early !== 0 || state.filters.length !== 0) process.exit(1);
