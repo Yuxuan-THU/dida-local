@@ -239,7 +239,7 @@ RRULE:FREQ=DAILY;INTERVAL=1
 | 任务行：勾选、标题、子任务计数、标签、日期、清单、优先级 | `TaskRow.tsx` | 截图 + UIA |
 | 右侧详情面板 | `DetailPane.tsx` | 截图 |
 | 日历月/周视图、右侧当日列表 | `CalendarView.tsx` | `CalendarControl` + 截图 |
-| 番茄、习惯、矩阵、摘要 | 已从 1.1 精简版移除 | 1.0 曾用公开产品形态 + 侧栏结构实现 |
+| 番茄、习惯、矩阵、摘要 | 已从 1.2 精简版移除 | 1.0 曾用公开产品形态 + 侧栏结构实现 |
 | 任务完成/克隆/提醒/子任务 | 服务端 CRUD + 重复任务生成 | `TickTickTask` 方法名 |
 | 2,880 条真实任务迁移 | `server/importer.mjs` | SQLite 快照 |
 
