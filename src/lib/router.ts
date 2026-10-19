@@ -8,15 +8,12 @@ export function parseHash(hash: string): View {
   switch (kind) {
     case 'today':
     case 'next7':
-    case 'inbox':
     case 'all':
     case 'completed':
     case 'abandoned':
     case 'trash':
     case 'calendar':
       return { kind } as View;
-    case 'list':
-      return id ? { kind: 'list', id } : { kind: 'inbox' };
     case 'tag':
       return id ? { kind: 'tag', name: id } : { kind: 'all' };
     case 'filter':

@@ -52,7 +52,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
   const [preview, setPreview] = useState<TickTickPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [importRange, setImportRange] = useState<'future' | 'all'>('future');
-  const [importResult, setImportResult] = useState<{ tasks: number; lists: number; completed: number } | null>(null);
+  const [importResult, setImportResult] = useState<{ tasks: number; completed: number } | null>(null);
   const [confirmImport, setConfirmImport] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [name, setName] = useState('');
@@ -192,7 +192,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
             {tab === 'appearance' && (
               <div className="settings-section">
                 <h3>外观</h3>
-                <p className="settings-lead">让清单看起来像你的工作台。</p>
+                <p className="settings-lead">让任务看起来像你的工作台。</p>
                 <div className="setting-row">
                   <span className="setting-label">主题<small>跟随系统时会自动切换</small></span>
                   <Segmented
@@ -458,13 +458,12 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                     <div className="import-preview">
                       <span><strong>{importRange === 'future' ? preview.futureTasks : preview.tasks}</strong> 个任务</span>
                       <span><strong>{importRange === 'future' ? preview.futureCompleted : preview.completed}</strong> 个已完成</span>
-                      <span><strong>{preview.lists}</strong> 个清单</span>
                     </div>
                   )}
                   {!previewLoading && !preview && <p className="muted">没有检测到滴答清单数据（%APPDATA%\Tick_Tick\TickTick.db）。</p>}
                   {importResult && (
                     <div className="import-success">
-                      <Check size={15} /> 已导入 {importResult.tasks} 个任务、{importResult.lists} 个清单
+                      <Check size={15} /> 已导入 {importResult.tasks} 个任务
                     </div>
                   )}
                   <div className="data-card-actions">
@@ -549,8 +548,8 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                 <div className="about-hero">
                   <span className="about-logo"><Check size={26} /></span>
                   <div>
-                    <strong>滴答 · 本地清单</strong>
-                    <span>版本 1.2.0 · 本地优先</span>
+                    <strong>滴答 · 本地任务</strong>
+                    <span>版本 1.3.0 · 本地优先</span>
                   </div>
                 </div>
                 <p className="settings-lead">
@@ -588,7 +587,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
           {importRange === 'future'
             ? `将只导入到期日在 ${todayKey()} 及以后的任务，今天之前的任务不会迁移。`
             : '将导入滴答清单的全部历史任务，包括已完成和已放弃的任务。'}
-          {' '}导入会替换当前的任务、清单、标签。导入前会自动生成一份 JSON 备份，保存在 <code>dida/data/backups</code>。
+          {' '}导入会替换当前的任务和标签。导入前会自动生成一份 JSON 备份，保存在 <code>dida/data/backups</code>。
         </p>
       </Modal>
 
@@ -604,7 +603,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
           </>
         }
       >
-        <p className="modal-copy">当前所有任务、清单和标签都会被删除，并恢复为演示数据。这个操作无法撤销。</p>
+        <p className="modal-copy">当前所有任务和标签都会被删除，并恢复为演示数据。这个操作无法撤销。</p>
       </Modal>
     </>
   );

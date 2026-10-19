@@ -18,7 +18,7 @@ await page.goto(target, { waitUntil: 'networkidle' });
 await page.waitForTimeout(800);
 await page.screenshot({ path: `${out}/11-today-lan.png` });
 
-await page.locator('.mobile-topbar-btn[aria-label="打开清单"]').click();
+await page.locator('.mobile-topbar-btn[aria-label="打开菜单"]').click();
 await page.waitForTimeout(350);
 await page.screenshot({ path: `${out}/12-drawer-lan.png` });
 await page.locator('.mobile-drawer-close').click();

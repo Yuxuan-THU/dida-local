@@ -4,7 +4,7 @@ import { Check, AlertCircle, RefreshCcw } from 'lucide-react';
 import { AppProvider, useApp } from './store';
 import type { View } from './types';
 import { parseHash, viewHash } from './lib/router';
-import { parseDue } from './lib/date';
+import { parseDue, todayKey } from './lib/date';
 import { useIsMobile } from './lib/useMediaQuery';
 import { Rail } from './components/Rail';
 import { Sidebar } from './components/Sidebar';
@@ -185,20 +185,17 @@ function AppShell() {
   if (loading) return <Splash />;
   if (error || !state) return <ErrorScreen error={error || '未知错误'} onRetry={refresh} />;
 
-  const isTaskView = ['today', 'next7', 'inbox', 'all', 'completed', 'abandoned', 'trash', 'list', 'tag', 'filter'].includes(view.kind);
+  const isTaskView = ['today', 'next7', 'all', 'completed', 'abandoned', 'trash', 'tag', 'filter'].includes(view.kind);
   const detailOpen = Boolean(selectedTask);
-  const addListId = view.kind === 'list' ? view.id : 'inbox';
 
   const mobileTitle = (() => {
     switch (view.kind) {
       case 'today': return '今天';
       case 'next7': return '最近 7 天';
-      case 'inbox': return '收集箱';
       case 'all': return '所有任务';
       case 'completed': return '已完成';
       case 'abandoned': return '已放弃';
       case 'trash': return '垃圾桶';
-      case 'list': return state.lists.find((l) => l.id === view.id)?.name || '清单';
       case 'tag': return `# ${view.name}`;
       case 'filter': return state.filters.find((f) => f.id === view.id)?.name || '过滤器';
       case 'calendar': return '日历';
@@ -297,7 +294,7 @@ function AppShell() {
           />
           <MobileQuickAdd
             open={mobileQuickAdd}
-            listId={addListId}
+            defaultDue={view.kind === 'today' ? todayKey() : undefined}
             onClose={() => setMobileQuickAdd(false)}
           />
         </>

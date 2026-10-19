@@ -11,7 +11,7 @@ import {
   Timer,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { Tag, Task, TaskList } from '../types';
+import type { Tag, Task } from '../types';
 import { formatDue, isOverdue, dateKey, parseDateKey, relativeTime } from '../lib/date';
 import { addDays } from 'date-fns';
 import { repeatLabel } from '../lib/parse';
@@ -20,7 +20,6 @@ import { PRIORITY_META, Checkbox, ContextMenuItem, PriorityFlag, TagPill, cx } f
 
 export function TaskRow({
   task,
-  list,
   tags,
   onOpen,
   onToggle,
@@ -40,7 +39,6 @@ export function TaskRow({
   onDragHandlePointerDown,
 }: {
   task: Task;
-  list?: TaskList;
   tags: Tag[];
   onOpen: () => void;
   onToggle: (completed: boolean) => void;
@@ -185,7 +183,6 @@ export function TaskRow({
       <div className="task-main">
         <Checkbox
           checked={completed}
-          color={list?.color}
           onChange={(next) => onToggle(next)}
           ariaLabel={completed ? '取消完成任务' : '完成任务'}
         />
@@ -257,12 +254,6 @@ export function TaskRow({
         <div className="task-trailing">
           {isMobile && task.dueAt && (
             <span className={cx('mobile-task-date', overdue && 'is-overdue')}>{formatDue(task)}</span>
-          )}
-          {list && (
-            <span className="task-list-chip" style={{ color: list.color }} title={list.name}>
-              <span>{list.emoji}</span>
-              <span>{list.name}</span>
-            </span>
           )}
           {task.priority > 0 && (
             <span className="task-priority" title={PRIORITY_META[task.priority].label}>

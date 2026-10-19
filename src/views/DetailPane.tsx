@@ -8,7 +8,6 @@ import {
   ChevronRight,
   CircleDot,
   Flag,
-  ListChecks,
   MoreHorizontal,
   Pin,
   Plus,
@@ -25,7 +24,7 @@ import { useApp } from '../store';
 import { formatDue, relativeTime } from '../lib/date';
 import { repeatLabel } from '../lib/parse';
 import { Checkbox, ContextMenu, IconButton, Popover, PRIORITY_META, TagPill, cx } from '../components/ui';
-import { DatePickerPanel, ListMenu, PriorityMenu, ReminderMenu, RepeatMenu } from '../components/pickers';
+import { DatePickerPanel, PriorityMenu, ReminderMenu, RepeatMenu } from '../components/pickers';
 
 function FieldRow({
   icon,
@@ -151,7 +150,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
     );
   }
 
-  const list = state.lists.find((l) => l.id === task.listId);
   const completed = task.status === 'completed';
   const abandoned = task.status === 'abandoned';
   const subtaskDone = task.subtasks.filter((s) => s.done).length;
@@ -225,7 +223,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
           </IconButton>
           <Checkbox
             checked={completed}
-            color={list?.color}
             onChange={(next) => toggleTask(task.id, next)}
             ariaLabel={completed ? '取消完成' : '完成任务'}
           />
@@ -255,7 +252,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
 
       <div className="detail-scroll">
         <div className="detail-title-wrap">
-          <span className="detail-list-emoji" style={{ background: `${list?.color || '#4f76f6'}16` }}>{list?.emoji || '📋'}</span>
           <textarea
             ref={titleRef}
             className={cx('detail-title', completed && 'is-completed')}
@@ -376,29 +372,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
                 value={task.priority}
                 onChange={(priority) => {
                   patchTask(task.id, { priority });
-                  close();
-                }}
-              />
-            )}
-          </Popover>
-
-          <Popover
-            width={210}
-            trigger={() => (
-              <button className="detail-field has-value">
-                <ListChecks size={16} />
-                <span className="detail-field-label">清单</span>
-                <span className="detail-field-value is-strong">{list?.emoji} {list?.name}</span>
-                <ChevronRight size={14} />
-              </button>
-            )}
-          >
-            {(close) => (
-              <ListMenu
-                lists={state.lists}
-                value={task.listId}
-                onChange={(listId) => {
-                  patchTask(task.id, { listId });
                   close();
                 }}
               />

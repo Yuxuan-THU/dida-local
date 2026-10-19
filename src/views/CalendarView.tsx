@@ -61,7 +61,6 @@ export function CalendarView({ onOpenTask }: { onOpenTask: (id: string) => void 
   const days = mode === 'month' ? monthGrid(cursor, weekStart) : weekDates(cursor, weekStart);
   const mobileDays = weekDates(cursor, weekStart);
   const selectedTasks = byDay.get(selectedDay) || [];
-  const selectedList = state.lists;
 
   const move = (direction: number) => {
     setCursor((current) => {
@@ -94,7 +93,7 @@ export function CalendarView({ onOpenTask }: { onOpenTask: (id: string) => void 
   const addQuick = async () => {
     const title = quickTitle.trim();
     if (!title) return;
-    const task = await createTask({ title, listId: selectedList.find((l) => l.isInbox)?.id || 'inbox', dueAt: selectedDay, allDay: true });
+    const task = await createTask({ title, dueAt: selectedDay, allDay: true });
     setQuickTitle('');
     if (task) {
       toast('任务已添加到这一天', 'success');
@@ -276,19 +275,13 @@ export function CalendarView({ onOpenTask }: { onOpenTask: (id: string) => void 
                     <button className="calendar-side-task-title" onClick={() => onOpenTask(task.id)}>
                       <span>{task.title}</span>
                       <small>
-                        {list?.emoji} {list?.name}
-                        {!task.allDay && ` · ${task.dueAt?.slice(11, 16)}`}
+                        {task.allDay ? '全天' : task.dueAt?.slice(11, 16)}
                       </small>
                     </button>
                   </div>
                 );
               })
             )}
-          </div>
-          <div className="calendar-legend">
-            {state.lists.filter((l) => !l.isInbox).map((list) => (
-              <span key={list.id}><i style={{ background: list.color }} />{list.name}</span>
-            ))}
           </div>
         </aside>
       </div>
@@ -402,8 +395,7 @@ function MobileCalendar({
                     <button className="mobile-agenda-copy" onClick={() => onOpenTask(task.id)}>
                       <span>{task.title}</span>
                       <small>
-                        {!task.allDay && task.dueAt && <b>{task.dueAt.slice(11, 16)}</b>}
-                        {list?.emoji} {list?.name}
+                        {task.allDay ? '全天' : task.dueAt?.slice(11, 16)}
                       </small>
                     </button>
                     <span className="mobile-agenda-color" style={{ background: list?.color }} />
@@ -437,8 +429,7 @@ function MobileCalendar({
                       <button className="mobile-agenda-copy" onClick={() => onOpenTask(task.id)}>
                         <span>{task.title}</span>
                         <small>
-                          {!task.allDay && task.dueAt && <b>{task.dueAt.slice(11, 16)}</b>}
-                          {list?.emoji} {list?.name}
+                          {task.allDay ? '全天' : task.dueAt?.slice(11, 16)}
                         </small>
                       </button>
                       <span className="mobile-agenda-color" style={{ background: list?.color }} />
@@ -499,7 +490,7 @@ function MobileCalendar({
                   <span className="mobile-timeline-dot" style={{ background: list?.color }} />
                   <button className="mobile-timeline-copy" onClick={() => onOpenTask(task.id)}>
                     <span>{task.title}</span>
-                    <small>{list?.emoji} {list?.name}</small>
+                    <small>{task.allDay ? '全天' : task.dueAt?.slice(11, 16)}</small>
                   </button>
                 </div>
               );

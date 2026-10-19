@@ -63,7 +63,6 @@ const emptyMeta: Record<string, { icon: React.ReactNode; title: string; descript
 
 function ReorderableRow({
   task,
-  list,
   tags,
   onOpen,
   onToggle,
@@ -75,7 +74,6 @@ function ReorderableRow({
   onPurge,
 }: {
   task: Task;
-  list?: TaskList;
   tags: Tag[];
   onOpen: () => void;
   onToggle: (completed: boolean) => void;
@@ -91,7 +89,6 @@ function ReorderableRow({
     <Reorder.Item value={task.id} dragListener={false} dragControls={controls} className="task-reorder-item">
       <TaskRow
         task={task}
-        list={list}
         tags={tags}
         onOpen={onOpen}
         onToggle={onToggle}
@@ -145,11 +142,9 @@ export function TaskView({
   const isBoard = listForView?.viewMode === 'board';
   const isTrash = view.kind === 'trash';
   const canAdd = !['completed', 'trash', 'abandoned'].includes(view.kind);
-  const addListId = view.kind === 'list' ? view.id : 'inbox';
 
   const rowProps = (task: Task) => ({
     task,
-    list: state.lists.find((l) => l.id === task.listId),
     tags: state.tags,
     onOpen: () => onOpenTask(task.id),
     onToggle: (next: boolean) => toggleTask(task.id, next),
@@ -215,7 +210,7 @@ export function TaskView({
   const empty = emptyMeta[view.kind] || {
     icon: <Sparkles size={32} />,
     title: '这里还很安静',
-    description: '添加第一个任务，让清单动起来。',
+    description: '添加第一个任务，让今天动起来。',
   };
 
   return (
@@ -264,8 +259,8 @@ export function TaskView({
       <div className="task-scroll">
         {canAdd && (
           <QuickAdd
-            listId={addListId}
             focusToken={quickAddToken}
+            defaultDue={view.kind === 'today' ? todayKey() : undefined}
           />
         )}
 

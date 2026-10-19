@@ -43,7 +43,7 @@ export function MobileTopBar({
 }) {
   return (
     <header className="mobile-topbar">
-      <button className="mobile-topbar-btn" onClick={onMenu} aria-label="打开清单">
+      <button className="mobile-topbar-btn" onClick={onMenu} aria-label="打开菜单">
         <Menu size={21} />
       </button>
       <div className="mobile-brand">
@@ -139,12 +139,12 @@ export function MobileDrawer({
 
 export function MobileQuickAdd({
   open,
-  listId,
   onClose,
+  defaultDue,
 }: {
   open: boolean;
-  listId: string;
   onClose: () => void;
+  defaultDue?: string;
 }) {
   const [token, setToken] = useState(0);
   useEffect(() => {
@@ -156,7 +156,7 @@ export function MobileQuickAdd({
         <strong>快速添加</strong>
         <button onClick={onClose} aria-label="关闭"><X size={18} /></button>
       </div>
-      <QuickAdd listId={listId} focusToken={token} onCreated={onClose} />
+      <QuickAdd focusToken={token} onCreated={onClose} defaultDue={defaultDue} />
     </Modal>
   );
 }

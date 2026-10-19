@@ -2,24 +2,24 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUp, CalendarDays, Flag, ListChecks, Plus, Sparkles, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../store';
-import type { Task, TaskList } from '../types';
+import type { Task } from '../types';
 import { parseQuickAdd } from '../lib/parse';
 import { formatDue } from '../lib/date';
-import { ListMenu, PriorityMenu, DatePickerPanel } from './pickers';
+import { PriorityMenu, DatePickerPanel } from './pickers';
 import { IconButton, Popover, PRIORITY_META, cx } from './ui';
 
 export function QuickAdd({
-  listId,
   onCreated,
   focusToken,
   placeholder,
   compact,
+  defaultDue,
 }: {
-  listId: string;
   onCreated?: (task: Task) => void;
   focusToken?: number;
   placeholder?: string;
   compact?: boolean;
+  defaultDue?: string;
 }) {
   const { state, createTask, toast } = useApp();
   const [text, setText] = useState('');
@@ -27,18 +27,15 @@ export function QuickAdd({
   const [manualDue, setManualDue] = useState<string | null | undefined>(undefined);
   const [manualAllDay, setManualAllDay] = useState<boolean | undefined>(undefined);
   const [manualPriority, setManualPriority] = useState<number | undefined>(undefined);
-  const [manualList, setManualList] = useState<string | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const stateRef = useRef<{ text: string; title: string }>({ text: '', title: '' });
 
   const parsed = useMemo(() => parseQuickAdd(text), [text]);
-  const dueAt = manualDue !== undefined ? manualDue : parsed.dueAt;
+  const dueAt = manualDue !== undefined ? manualDue : parsed.dueAt ?? defaultDue ?? null;
   const allDay = manualAllDay !== undefined ? manualAllDay : parsed.allDay;
   const priority = manualPriority !== undefined ? manualPriority : parsed.priority;
-  const listIdValue = manualList ?? listId;
-  const list = state?.lists.find((l) => l.id === listIdValue);
   const showPanel = focused || text.length > 0;
 
   useEffect(() => {
@@ -58,7 +55,6 @@ export function QuickAdd({
     setManualDue(undefined);
     setManualAllDay(undefined);
     setManualPriority(undefined);
-    setManualList(undefined);
     setJustAdded(false);
   };
 
@@ -68,7 +64,6 @@ export function QuickAdd({
     setSaving(true);
     const task = await createTask({
       title: parsed.title,
-      listId: listIdValue,
       dueAt,
       allDay,
       priority,
@@ -88,7 +83,7 @@ export function QuickAdd({
     }
   };
 
-  const hasMeta = Boolean(dueAt || priority || parsed.tags.length || parsed.repeatRule || manualList);
+  const hasMeta = Boolean(dueAt || priority || parsed.tags.length || parsed.repeatRule);
   const dateLabel = dueAt ? formatDue({ dueAt, allDay }) : '';
 
   return (
@@ -105,7 +100,7 @@ export function QuickAdd({
           ref={inputRef}
           rows={1}
           value={text}
-          placeholder={placeholder || `添加任务至「${list?.name || '收集箱'}」`}
+          placeholder={placeholder || '添加任务'}
           onChange={(event) => setText(event.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => window.setTimeout(() => setFocused(false), 120)}
@@ -182,27 +177,6 @@ export function QuickAdd({
                   value={priority}
                   onChange={(next) => {
                     setManualPriority(next);
-                    close();
-                  }}
-                />
-              )}
-            </Popover>
-
-            <Popover
-              width={210}
-              trigger={() => (
-                <button className="quick-tool">
-                  <span className="quick-list-emoji">{list?.emoji}</span>
-                  <span>{list?.name || '清单'}</span>
-                </button>
-              )}
-            >
-              {(close) => (
-                <ListMenu
-                  lists={state?.lists || []}
-                  value={listIdValue}
-                  onChange={(id) => {
-                    setManualList(id);
                     close();
                   }}
                 />

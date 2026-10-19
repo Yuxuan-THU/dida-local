@@ -19,7 +19,7 @@ import { PRIORITY_META, Kbd, cx } from '../components/ui';
 
 interface SearchResult {
   id: string;
-  type: 'task' | 'list' | 'tag' | 'action';
+  type: 'task' | 'tag' | 'action';
   title: string;
   subtitle?: string;
   task?: Task;
@@ -73,27 +73,13 @@ export function SearchPalette({
         })
         .slice(0, 10);
       for (const task of tasks) {
-        const list = state.lists.find((l) => l.id === task.listId);
         found.push({
           id: `task-${task.id}`,
           type: 'task',
           title: task.title,
-          subtitle: `${list?.emoji || ''} ${list?.name || ''}${task.dueAt ? ` · ${formatDue(task)}` : ''}${task.tags.length ? ` · #${task.tags.join(' #')}` : ''}`,
+          subtitle: `${task.dueAt ? formatDue(task) : '无日期'}${task.tags.length ? ` · #${task.tags.join(' #')}` : ''}`,
           task,
           icon: <CheckSquare size={16} />,
-          color: list?.color,
-        });
-      }
-      const lists = state.lists.filter((list) => list.name.toLowerCase().includes(q)).slice(0, 3);
-      for (const list of lists) {
-        found.push({
-          id: `list-${list.id}`,
-          type: 'list',
-          title: list.name,
-          subtitle: '清单',
-          icon: <span className="search-emoji">{list.emoji}</span>,
-          view: { kind: 'list', id: list.id },
-          color: list.color,
         });
       }
       const tags = state.tags.filter((tag) => tag.name.toLowerCase().includes(q)).slice(0, 3);
@@ -112,10 +98,10 @@ export function SearchPalette({
         id: 'create',
         type: 'action',
         title: `创建任务「${query.trim()}」`,
-        subtitle: '回车添加到收集箱',
+        subtitle: '回车创建任务',
         icon: <Plus size={16} />,
         action: async () => {
-          const task = await createTask({ title: query.trim(), listId: 'inbox', stage: 'todo' });
+          const task = await createTask({ title: query.trim(), stage: 'todo' });
           if (task) {
             onClose();
             onOpenTask(task.id);
@@ -168,8 +154,8 @@ export function SearchPalette({
     );
   };
 
-  const groups = ['task', 'list', 'tag', 'action'] as const;
-  const groupLabels: Record<string, string> = { task: '任务', list: '清单', tag: '标签', action: '操作' };
+  const groups = ['task', 'tag', 'action'] as const;
+  const groupLabels: Record<string, string> = { task: '任务', tag: '标签', action: '操作' };
 
   return (
     <AnimatePresence>
@@ -199,7 +185,7 @@ export function SearchPalette({
                 ref={inputRef}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="搜索任务、清单、标签，或输入新任务…"
+                placeholder="搜索任务、标签，或输入新任务…"
                 onKeyDown={(event) => {
                   if (event.key === 'Escape') onClose();
                   if (event.key === 'ArrowDown') {
@@ -228,7 +214,7 @@ export function SearchPalette({
                 <div className="search-empty">
                   <Search size={26} />
                   <p>没有找到「{query}」</p>
-                  <span>试试任务标题、标签或清单名。</span>
+                  <span>试试任务标题或标签。</span>
                 </div>
               )}
               {groups.map((group) => {

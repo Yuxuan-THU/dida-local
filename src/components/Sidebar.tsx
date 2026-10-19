@@ -150,7 +150,7 @@ export function Sidebar({
       )}
       <div className="sidebar-head">
         <div>
-          <h1>我的清单</h1>
+          <h1>我的任务</h1>
           <span className="local-badge"><span className="local-dot" /> 本地优先</span>
         </div>
         <IconButton label="设置" onClick={onOpenSettings}>
@@ -175,60 +175,12 @@ export function Sidebar({
             onClick={() => onNavigate({ kind: 'next7' })}
           />
           <NavItem
-            icon={<Inbox size={18} />}
-            label="收集箱"
-            count={counts.inbox}
-            active={view.kind === 'inbox'}
-            onClick={() => onNavigate({ kind: 'inbox' })}
-          />
-          <NavItem
             icon={<ListTodo size={18} />}
             label="全部任务"
             active={view.kind === 'all'}
             onClick={() => onNavigate({ kind: 'all' })}
           />
         </nav>
-
-        <div className="sidebar-section">
-          <div className="section-head">
-            <button className="section-toggle" onClick={() => setListsOpen((v) => !v)}>
-              {listsOpen ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
-              <span>清单</span>
-            </button>
-            <button className="section-add" onClick={() => openEditor('create')} aria-label="新建清单" title="新建清单">
-              <Plus size={15} />
-            </button>
-          </div>
-          {listsOpen && (
-            <div className="section-body">
-              {lists.map((list) => (
-                <div className="sidebar-item-wrap" key={list.id}>
-                  <NavItem
-                    icon={<span className="list-emoji">{list.emoji}</span>}
-                    label={list.name}
-                    count={counts.lists[list.id] || 0}
-                    active={view.kind === 'list' && view.id === list.id}
-                    onClick={() => onNavigate({ kind: 'list', id: list.id })}
-                    onContextMenu={(event) => {
-                      event.preventDefault();
-                      openEditor('edit', list);
-                    }}
-                  />
-                  <button
-                    className="sidebar-more"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      openEditor('edit', list);
-                    }}
-                    aria-label="编辑清单"
-                  >
-                    <MoreHorizontal size={15} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
         <div className="sidebar-section">
           <div className="section-head">

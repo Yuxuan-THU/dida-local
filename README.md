@@ -1,6 +1,6 @@
-# 滴答 · 本地清单
+# 滴答 · 本地任务
 
-**一个离线优先、滴答清单风格的 Windows 桌面任务管理器。**
+**一个离线优先、滴答风格的 Windows 桌面任务管理器。**
 任务、日历、搜索、提醒和主题都在本机运行，数据只写入本地 SQLite。
 
 [![Release](https://img.shields.io/github/v/release/Yuxuan-THU/dida-local?display_name=tag&style=flat-square)](https://github.com/Yuxuan-THU/dida-local/releases/latest)
@@ -44,7 +44,7 @@ Dida Local 的目标很直接：
 
 - **本地优先**：不需要账号，数据存本机 SQLite，断网可用
 - **桌面原生体验**：独立窗口、系统托盘、全局快捷键，不是浏览器标签页
-- **保留滴答清单的使用习惯**：今天 / 最近 7 天 / 收集箱 / 清单 / 标签 / 过滤器
+- **保留滴答清单的使用习惯**：今天 / 最近 7 天 / 全部任务 / 标签 / 过滤器
 - **能把已有数据带过来**：读取本机滴答清单数据库，支持只迁移今天及以后
 - **代码可读、可改**：没有混淆，前端、服务端、数据库 schema 都是独立实现
 
@@ -56,14 +56,14 @@ Dida Local 的目标很直接：
 
 ### Windows 安装版（推荐）
 
-当前 Release 提供 **1.2.0 精简版安装包**：
+当前 Release 提供 **1.3.0 无清单版安装包**：
 
 | 文件 | 说明 |
 | --- | --- |
-| [DidaLocal-1.2.0-x64.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.2.0/DidaLocal-1.2.0-x64.exe) | 安装包，创建桌面/开始菜单快捷方式 |
-| [DidaLocal-Portable-1.2.0.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.2.0/DidaLocal-Portable-1.2.0.exe) | 免安装版，双击直接运行 |
+| [DidaLocal-1.3.0-x64.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.3.0/DidaLocal-1.3.0-x64.exe) | 安装包，创建桌面/开始菜单快捷方式 |
+| [DidaLocal-Portable-1.3.0.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.3.0/DidaLocal-Portable-1.3.0.exe) | 免安装版，双击直接运行 |
 
-1.2.0 移除了专注、习惯、矩阵、摘要四个模块，只保留任务、清单、日历、搜索、提醒和主题。
+1.3.0 移除了清单和收集箱：任务不再需要选择归属，创建后就是一条独立任务。
 升级时直接运行新安装包覆盖安装即可，数据库会保留。
 
 也可以用源码构建：
@@ -109,26 +109,24 @@ npm run desktop
 
 - 快速添加，支持中文自然语言：
   `明天下午 3 点 交周报 !高 #工作`
-- 标题、备注、子任务、优先级、标签、清单
+- 标题、备注、子任务、优先级、标签
 - 日期 / 时间 / 全天、重复规则、提醒
 - 完成、取消完成、删除、恢复、垃圾桶
 - 双击标题内联重命名
-- 列表 / 看板双视图，看板拖拽改阶段
 - 拖拽排序、过期任务一键顺延
 - 完成勾选动画、行折叠、分组过渡
 
 ### 视图
 
-- 今天、最近 7 天、收集箱、全部任务、已完成、已放弃、垃圾桶
-- 自定义清单（emoji、颜色、列表/看板）
+- 今天、最近 7 天、全部任务、已完成、已放弃、垃圾桶
 - 标签汇总
 - 自定义过滤器（优先级、标签、日期、状态）
-- 全局搜索：任务、清单、标签、操作混合搜索
+- 全局搜索：任务、标签、操作混合搜索
 - 可读取官方桌面版数据库，在后台自动镜像手机同步下来的任务
 
 ### 日历
 
-- 月视图：任务条、清单颜色、今日高亮、右侧当日任务
+- 月视图：任务条、今日高亮、右侧当日任务
 - 周视图：全天任务行 + 时间轴
 - 拖拽任务改期
 - 点击日期快速添加
@@ -153,9 +151,7 @@ npm run desktop
 | --- | --- |
 | ![今天](verify-shots/01-today.png) | ![日历](verify-shots/02-calendar.png) |
 
-| 深色模式 | 看板 |
-| --- | --- |
-| ![深色](verify-shots/15-dark-today.png) | ![看板](verify-shots/22-board-empty.png) |
+![手机视图](verify-shots/24-mobile-no-lists.png)
 
 ---
 
@@ -192,8 +188,8 @@ npm run pack
 
 产物在 `release/`：
 
-- `DidaLocal-1.2.0-x64.exe`
-- `DidaLocal-Portable-1.2.0.exe`
+- `DidaLocal-1.3.0-x64.exe`
+- `DidaLocal-Portable-1.3.0.exe`
 
 ### 目录与脚本
 
@@ -231,7 +227,7 @@ npm run test:core  后端 24 项核心检查
    %APPDATA%\DidaLocal\data\backups\
    ```
 
-导入只读取业务表（任务、清单、标签），不会读取或上传登录 token、密码、附件。
+导入只读取业务表（任务、标签），不会读取或上传登录 token、密码、附件。清单结构会被忽略。
 
 ### 命令行
 
@@ -247,7 +243,6 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 
 | 滴答清单 | Dida Local |
 | --- | --- |
-| `ProjectModel` | 清单（保留 emoji、颜色、看板视图） |
 | `TaskModel.status 0 / 2 / -1` | 未完成 / 已完成 / 已放弃 |
 | `TaskModel.startDate` + `isAllDay` | 到期日与全天标记 |
 | `TaskModel.tag` | 标签 |
@@ -273,7 +268,7 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 1. 打开本应用 → **设置 → 数据**
 2. 找到 **「官方滴答自动同步」**
 3. 选择范围：
-   - **全部消息**：全部任务、历史完成和清单
+   - **全部消息**：全部任务和历史完成
    - **今天及以后**：只镜像今天及以后的任务
 4. 点击 **开启自动同步**
 
@@ -292,7 +287,6 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 同步内容：
 
 - 任务、子任务、状态、优先级、到期时间、标签、重复规则、提醒
-- 清单、看板视图
 - 删除/完成状态会跟随官方数据
 
 ### 这是单向镜像，不是双向写入
@@ -411,7 +405,7 @@ npm run verify:electron    # Electron 启动/关闭验证
 
 - 桌面端 1440×960 全部主视图通过，**0 console error / page error**
 - 后端 24 项检查全部通过
-- 真实 4.8 MB 滴答清单数据库：约 2,900 个任务、2,600+ 个已完成、4 个清单导入通过
+- 真实 4.8 MB 滴答清单数据库：约 2,900 个任务、2,600+ 个已完成导入通过
 - `fromDate` 过滤测试确认不会导入早于今天的任务
 
 验证截图在 [`verify-shots/`](verify-shots/)。
@@ -442,7 +436,7 @@ REA 的命令、证据 ID、SHA-256、MVID 和限制都记录在 [REA-ANALYSIS.m
 
 这是一个本地单机版，不包含依赖云端或团队授权的功能：
 
-- 团队共享清单、评论、@成员
+- 团队共享、评论、@成员
 - 账号登录、多端云同步
 - 附件上传、日历账号（Google/Outlook）同步
 - 移动端原生离线数据库与增量同步（当前是局域网 WebView 壳）
