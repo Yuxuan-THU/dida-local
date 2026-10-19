@@ -185,6 +185,8 @@ function mergeSnapshot(data, lastSyncAt) {
   const existingLists = new Set(db.prepare('SELECT id FROM lists').all().map((row) => row.id));
   const existingHabits = new Set(db.prepare('SELECT id FROM habits').all().map((row) => row.id));
   const incomingTasks = new Set(data.tasks.map((task) => task.id));
+  const incomingLists = new Set(data.lists.map((list) => list.id));
+  const incomingHabits = new Set(data.habits.map((habit) => habit.id));
   const changed = { added: 0, updated: 0, removed: 0, conflicts: 0, lists: 0, tags: 0, habits: 0, checkins: 0, focus: 0 };
   const now = nowIso();
 
@@ -193,6 +195,11 @@ function mergeSnapshot(data, lastSyncAt) {
     for (const list of data.lists) {
       listStmt.run(list.id, list.name, list.emoji, list.color, list.sortOrder, list.isInbox ? 1 : 0, list.viewMode, list.archived ? 1 : 0, list.createdAt || now);
       if (!existingLists.has(list.id)) changed.lists += 1;
+    }
+    for (const id of existingLists) {
+      if (!id.startsWith('tt-list-') || incomingLists.has(id)) continue;
+      db.prepare('UPDATE lists SET archived = 1, deleted_at = ? WHERE id = ?').run(now, id);
+      changed.removed += 1;
     }
 
     for (const task of data.tasks) {
@@ -233,6 +240,11 @@ function mergeSnapshot(data, lastSyncAt) {
         habit.createdAt || now,
       );
       if (!existingHabits.has(habit.id)) changed.habits += 1;
+    }
+    for (const id of existingHabits) {
+      if (!id.startsWith('tt-habit-') || incomingHabits.has(id)) continue;
+      db.prepare('UPDATE habits SET archived = 1, deleted_at = ? WHERE id = ?').run(now, id);
+      changed.removed += 1;
     }
 
     for (const log of data.habitLogs) {
