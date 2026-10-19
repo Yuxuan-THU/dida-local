@@ -92,7 +92,7 @@ npx -y rea-agents@latest inspect-managed-members `
 
 ```powershell
 npx -y rea-agents@latest inspect-sqlite-database `
-  "verify\TickTick-copy.db" --format json --full-output
+  "<TickTick 数据库快照>.db" --format json --full-output
 ```
 
 返回：
@@ -115,7 +115,7 @@ npx -y rea-agents@latest inspect-sqlite-database `
 
 ```text
 源：`%APPDATA%\Tick_Tick\TickTick.db`
-快照：verify\TickTick-copy.db
+快照：`<TickTick 数据库快照>.db`
 SHA-256：BB7D59DFB5643DFBA6FDE4668B301F4EC61107517ECCC307A1B934EBD9AB5FA9
 大小：4,857,856 bytes
 方式：SQLite backup API（只读打开，避免干扰正在运行的客户端）
@@ -293,10 +293,9 @@ npx -y rea-agents@latest inspect-managed-members `
 
 # 3. SQLite（本机 Node 24.13 下会被拒绝）
 npx -y rea-agents@latest inspect-sqlite-database `
-  "verify\TickTick-copy.db" --format json --full-output
+  "<TickTick 数据库快照>.db" --format json --full-output
 
 # 4. 本地导入验证
-cd dida
 npm run test:import
 ```
 
