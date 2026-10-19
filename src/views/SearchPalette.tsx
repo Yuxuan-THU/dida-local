@@ -10,8 +10,6 @@ import {
   Plus,
   Search,
   Settings,
-  Sparkles,
-  Timer,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useApp } from '../store';
@@ -128,8 +126,6 @@ export function SearchPalette({
       found.push(
         { id: 'today', type: 'action', title: '今天', subtitle: '查看今天的任务', icon: <CalendarDays size={16} />, view: { kind: 'today' } },
         { id: 'next7', type: 'action', title: '最近 7 天', subtitle: '接下来一周的安排', icon: <ListTodo size={16} />, view: { kind: 'next7' } },
-        { id: 'focus', type: 'action', title: '专注', subtitle: '开始一个番茄钟', icon: <Timer size={16} />, view: { kind: 'focus' } },
-        { id: 'habits', type: 'action', title: '习惯', subtitle: '查看今天的打卡', icon: <Sparkles size={16} />, view: { kind: 'habits' } },
         { id: 'settings', type: 'action', title: '设置', subtitle: '主题、数据与导入', icon: <Settings size={16} />, action: () => { onClose(); onSettings(); } },
       );
     }

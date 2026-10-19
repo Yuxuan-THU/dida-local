@@ -1,4 +1,4 @@
-import type { AppState, FocusSession, Habit, ImportStats, MobileInfo, SavedFilter, Settings, Tag, Task, TaskList, TickTickPreview, TickTickSyncStatus } from './types';
+import type { AppState, ImportStats, MobileInfo, SavedFilter, Settings, Tag, Task, TaskList, TickTickPreview, TickTickSyncStatus } from './types';
 
 const TOKEN_KEY = 'dida-access-token';
 let accessToken = '';
@@ -79,18 +79,6 @@ export const api = {
   updateTag: (id: string, patch: Partial<Tag>) =>
     request<Tag>(`/api/tags/${encodeURIComponent(id)}`, { method: 'PATCH', body: json(patch) }),
   deleteTag: (id: string) => request<{ ok: boolean }>(`/api/tags/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-
-  createHabit: (habit: Partial<Habit>) => request<Habit>('/api/habits', { method: 'POST', body: json(habit) }),
-  updateHabit: (id: string, patch: Partial<Habit>) =>
-    request<Habit>(`/api/habits/${encodeURIComponent(id)}`, { method: 'PATCH', body: json(patch) }),
-  deleteHabit: (id: string) => request<{ ok: boolean }>(`/api/habits/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-  checkinHabit: (id: string, date: string, value = 1) =>
-    request<{ habitId: string; date: string; value: number }>(`/api/habits/${encodeURIComponent(id)}/checkin`, {
-      method: 'POST',
-      body: json({ date, value }),
-    }),
-
-  addFocus: (session: Partial<FocusSession>) => request<FocusSession>('/api/focus', { method: 'POST', body: json(session) }),
 
   createFilter: (filter: Partial<SavedFilter>) => request<SavedFilter>('/api/filters', { method: 'POST', body: json(filter) }),
   deleteFilter: (id: string) => request<{ ok: boolean }>(`/api/filters/${encodeURIComponent(id)}`, { method: 'DELETE' }),

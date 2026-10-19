@@ -57,44 +57,6 @@ export interface Tag {
   createdAt: string;
 }
 
-export interface HabitFrequency {
-  type: 'daily' | 'weekly' | 'monthly';
-  days?: number[];
-}
-
-export interface Habit {
-  id: string;
-  name: string;
-  emoji: string;
-  color: string;
-  goal: number;
-  step: number;
-  unit: string;
-  frequency: HabitFrequency;
-  notes: string;
-  sortOrder: number;
-  archived: boolean;
-  createdAt: string;
-}
-
-export interface HabitLog {
-  habitId: string;
-  date: string;
-  value: number;
-  note: string;
-  updatedAt: string;
-}
-
-export interface FocusSession {
-  id: string;
-  taskId: string | null;
-  mode: 'focus' | 'short' | 'long';
-  duration: number;
-  startedAt: string;
-  endedAt: string;
-  completed: boolean;
-}
-
 export interface FilterRule {
   priority?: number[];
   tag?: string;
@@ -114,15 +76,6 @@ export interface SavedFilter {
   createdAt: string;
 }
 
-export interface PomodoroSettings {
-  focus: number;
-  short: number;
-  long: number;
-  longEvery: number;
-  autoStartBreak: boolean;
-  autoStartFocus: boolean;
-}
-
 export interface Settings {
   theme: 'light' | 'dark' | 'auto';
   accent: string;
@@ -132,8 +85,6 @@ export interface Settings {
   timeFormat: '24h' | '12h';
   density: 'comfortable' | 'compact';
   showCompleted: boolean;
-  pomodoro: PomodoroSettings;
-  dailyFocusGoal: number;
   dailyTaskGoal: number;
   notifications: boolean;
   sound: boolean;
@@ -144,9 +95,6 @@ export interface AppState {
   lists: TaskList[];
   tags: Tag[];
   tasks: Task[];
-  habits: Habit[];
-  habitLogs: HabitLog[];
-  focusSessions: FocusSession[];
   filters: SavedFilter[];
   settings: Settings;
   meta: { now: string; version: number; revision: number };
@@ -160,11 +108,7 @@ export type View =
   | { kind: 'completed' }
   | { kind: 'abandoned' }
   | { kind: 'trash' }
-  | { kind: 'summary' }
   | { kind: 'calendar' }
-  | { kind: 'focus' }
-  | { kind: 'habits' }
-  | { kind: 'matrix' }
   | { kind: 'list'; id: string }
   | { kind: 'tag'; name: string }
   | { kind: 'filter'; id: string };
@@ -183,9 +127,6 @@ export interface ImportStats {
     tasks: number;
     completed: number;
     tags: number;
-    habits: number;
-    checkins: number;
-    focusSessions: number;
   };
   backupPath: string;
   source: string;
@@ -204,8 +145,6 @@ export interface TickTickSyncStatus {
     tasks?: number;
     completed?: number;
     lists?: number;
-    habits?: number;
-    checkins?: number;
     added?: number;
     updated?: number;
     removed?: number;
@@ -218,8 +157,6 @@ export interface TickTickPreview {
   tasks: number;
   completed: number;
   lists: number;
-  habits: number;
-  checkins: number;
   size: number;
   futureTasks: number;
   futureCompleted: number;

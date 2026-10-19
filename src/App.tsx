@@ -13,10 +13,6 @@ import { Toasts } from './components/Toasts';
 import { TaskView } from './views/TaskView';
 import { DetailPane } from './views/DetailPane';
 import { CalendarView } from './views/CalendarView';
-import { FocusView } from './views/FocusView';
-import { HabitsView } from './views/HabitsView';
-import { MatrixView } from './views/MatrixView';
-import { SummaryView } from './views/SummaryView';
 import { SearchPalette } from './views/SearchPalette';
 import { SettingsModal } from './views/SettingsModal';
 
@@ -180,10 +176,6 @@ function AppShell() {
         navigate({ kind: 'today' });
       } else if (key === 'c') {
         navigate({ kind: 'calendar' });
-      } else if (key === 'f') {
-        navigate({ kind: 'focus' });
-      } else if (key === 'h') {
-        navigate({ kind: 'habits' });
       }
     };
     window.addEventListener('keydown', onKey);
@@ -210,10 +202,6 @@ function AppShell() {
       case 'tag': return `# ${view.name}`;
       case 'filter': return state.filters.find((f) => f.id === view.id)?.name || '过滤器';
       case 'calendar': return '日历';
-      case 'focus': return '专注';
-      case 'habits': return '习惯';
-      case 'matrix': return '四象限';
-      case 'summary': return '摘要';
       default: return '滴答';
     }
   })();
@@ -229,12 +217,6 @@ function AppShell() {
         />
       )}
       {view.kind === 'calendar' && <CalendarView onOpenTask={setSelectedTask} />}
-      {view.kind === 'focus' && <FocusView onOpenSettings={() => setSettingsOpen(true)} />}
-      {view.kind === 'habits' && <HabitsView />}
-      {view.kind === 'matrix' && <MatrixView onOpenTask={setSelectedTask} />}
-      {view.kind === 'summary' && (
-        <SummaryView onOpenTask={setSelectedTask} onOpenTasks={() => navigate({ kind: 'today' })} />
-      )}
     </>
   );
 

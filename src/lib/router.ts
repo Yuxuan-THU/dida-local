@@ -13,11 +13,7 @@ export function parseHash(hash: string): View {
     case 'completed':
     case 'abandoned':
     case 'trash':
-    case 'summary':
     case 'calendar':
-    case 'focus':
-    case 'habits':
-    case 'matrix':
       return { kind } as View;
     case 'list':
       return id ? { kind: 'list', id } : { kind: 'inbox' };

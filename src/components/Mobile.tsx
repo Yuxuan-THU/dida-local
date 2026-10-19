@@ -3,18 +3,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   CalendarDays,
   CheckCircle2,
-  Flame,
-  Grid2X2,
   LayoutList,
   Menu,
   MoreHorizontal,
   Plus,
   Search,
   Settings,
-  Timer,
   Trash2,
   X,
-  ChartNoAxesColumn,
 } from 'lucide-react';
 import type { View } from '../types';
 import { useApp } from '../store';
@@ -25,12 +21,10 @@ import { Modal, cx } from './ui';
 const TABS = [
   { key: 'tasks', label: '任务', icon: LayoutList, view: { kind: 'today' } as View },
   { key: 'calendar', label: '日历', icon: CalendarDays, view: { kind: 'calendar' } as View },
-  { key: 'focus', label: '专注', icon: Timer, view: { kind: 'focus' } as View },
-  { key: 'habits', label: '习惯', icon: Flame, view: { kind: 'habits' } as View },
 ] as const;
 
 function tabForView(view: View) {
-  if (view.kind === 'calendar' || view.kind === 'focus' || view.kind === 'habits') return view.kind;
+  if (view.kind === 'calendar') return 'calendar';
   return 'tasks';
 }
 
@@ -95,7 +89,7 @@ export function MobileTabBar({
           </button>
         );
       })}
-      <button className={cx('mobile-tab', ['summary', 'matrix', 'abandoned', 'trash', 'completed'].includes(view.kind) && 'is-active')} onClick={onMore}>
+      <button className={cx('mobile-tab', ['abandoned', 'trash', 'completed'].includes(view.kind) && 'is-active')} onClick={onMore}>
         <MoreHorizontal size={21} strokeWidth={2} />
         <span>更多</span>
       </button>
@@ -186,8 +180,6 @@ export function MobileMore({
     onNavigate(view);
   };
   const items = [
-    { label: '摘要', icon: <ChartNoAxesColumn size={19} />, action: () => go({ kind: 'summary' }) },
-    { label: '矩阵', icon: <Grid2X2 size={19} />, action: () => go({ kind: 'matrix' }) },
     { label: '已完成', icon: <CheckCircle2 size={19} />, action: () => go({ kind: 'completed' }) },
     { label: '垃圾桶', icon: <Trash2 size={19} />, action: () => go({ kind: 'trash' }) },
     { label: '搜索', icon: <Search size={19} />, action: () => { onClose(); onSearch(); } },

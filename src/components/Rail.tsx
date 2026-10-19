@@ -1,34 +1,24 @@
 import {
   Bell,
   CalendarDays,
-  ChartNoAxesColumn,
-  Flame,
-  LayoutGrid,
   ListChecks,
   Search,
   Settings,
-  Timer,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../store';
 import type { View } from '../types';
 import { cx } from './ui';
 
-type RailView = 'today' | 'calendar' | 'focus' | 'habits' | 'matrix' | 'summary';
+type RailView = 'today' | 'calendar';
 
 const NAV = [
   { key: 'today', label: '任务', icon: ListChecks, hash: '#/today' },
   { key: 'calendar', label: '日历', icon: CalendarDays, hash: '#/calendar' },
-  { key: 'focus', label: '专注', icon: Timer, hash: '#/focus' },
-  { key: 'habits', label: '习惯', icon: Flame, hash: '#/habits' },
-  { key: 'matrix', label: '矩阵', icon: LayoutGrid, hash: '#/matrix' },
-  { key: 'summary', label: '摘要', icon: ChartNoAxesColumn, hash: '#/summary' },
 ] as const;
 
 function activeKey(view: View): RailView | null {
-  if (view.kind === 'calendar' || view.kind === 'focus' || view.kind === 'habits' || view.kind === 'matrix' || view.kind === 'summary') {
-    return view.kind;
-  }
+  if (view.kind === 'calendar') return 'calendar';
   if (['today', 'next7', 'inbox', 'all', 'list', 'tag', 'filter', 'completed', 'abandoned', 'trash'].includes(view.kind)) {
     return 'today';
   }

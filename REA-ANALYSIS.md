@@ -61,7 +61,7 @@ UpdateCheckListItemsFun
 DeletePomodoroSummariesFun
 ```
 
-这组方法名直接支撑了本地版的任务 CRUD、提醒、子任务清单、番茄记录和“创建副本”功能的建模。
+这组方法名直接支撑了本地版的任务 CRUD、提醒、子任务清单和“创建副本”功能的建模。
 完整输出未随仓库分发（避免公开第三方程序集元数据）。
 
 ### 2.2 悬浮任务窗口模型
@@ -239,7 +239,7 @@ RRULE:FREQ=DAILY;INTERVAL=1
 | 任务行：勾选、标题、子任务计数、标签、日期、清单、优先级 | `TaskRow.tsx` | 截图 + UIA |
 | 右侧详情面板 | `DetailPane.tsx` | 截图 |
 | 日历月/周视图、右侧当日列表 | `CalendarView.tsx` | `CalendarControl` + 截图 |
-| 番茄、习惯、矩阵、摘要 | `FocusView` / `HabitsView` / `MatrixView` / `SummaryView` | 公开产品形态 + 侧栏结构 |
+| 番茄、习惯、矩阵、摘要 | 已从 1.1 精简版移除 | 1.0 曾用公开产品形态 + 侧栏结构实现 |
 | 任务完成/克隆/提醒/子任务 | 服务端 CRUD + 重复任务生成 | `TickTickTask` 方法名 |
 | 2,880 条真实任务迁移 | `server/importer.mjs` | SQLite 快照 |
 
@@ -252,8 +252,6 @@ RRULE:FREQ=DAILY;INTERVAL=1
 - 视图切换：淡入 + 轻微上移
 - 快速添加：高度展开 + parsed chip 即时反馈
 - 详情/弹窗：spring 过渡
-- 专注/习惯完成：彩纸粒子
-- 计时环：按剩余时间连续收缩
 - 设置/搜索/右键菜单：缩放 + 透明度过渡
 - 尊重 `prefers-reduced-motion`
 

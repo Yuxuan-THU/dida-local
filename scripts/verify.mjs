@@ -33,10 +33,6 @@ const nav = async (selector, name) => {
   }
 };
 await nav('.rail-item[aria-label="日历"]', '02-calendar');
-await nav('.rail-item[aria-label="专注"]', '03-focus');
-await nav('.rail-item[aria-label="习惯"]', '04-habits');
-await nav('.rail-item[aria-label="矩阵"]', '05-matrix');
-await nav('.rail-item[aria-label="摘要"]', '06-summary');
 await nav('.rail-item[aria-label="任务"]', '07-tasks');
 
 // Complete the first task and verify it moves into the completed group.
@@ -103,25 +99,6 @@ if (await quick.count()) {
   await page.waitForTimeout(650);
   await page.screenshot({ path: path.join(outDir, '17-after-add.png') });
 }
-
-// Habit check-in.
-await page.locator('.rail-item[aria-label="习惯"]').first().click();
-await page.waitForTimeout(500);
-const todayHabit = page.locator('.habit-dot.is-today').first();
-if (await todayHabit.count()) {
-  await todayHabit.click();
-  await page.waitForTimeout(650);
-  await page.screenshot({ path: path.join(outDir, '18-habit-checkin.png') });
-}
-
-// Focus start/pause.
-await page.locator('.rail-item[aria-label="专注"]').first().click();
-await page.waitForTimeout(450);
-await page.locator('.focus-primary').click();
-await page.waitForTimeout(1600);
-await page.screenshot({ path: path.join(outDir, '19-focus-running.png') });
-await page.locator('.focus-primary').click();
-await page.waitForTimeout(350);
 
 // Calendar week view.
 await page.locator('.rail-item[aria-label="日历"]').first().click();

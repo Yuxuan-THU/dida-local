@@ -28,10 +28,6 @@ await page.locator('.mobile-tab', { hasText: '日历' }).click();
 await page.waitForTimeout(550);
 await page.screenshot({ path: `${out}/13-calendar-lan.png` });
 
-await page.locator('.mobile-tab', { hasText: '习惯' }).click();
-await page.waitForTimeout(500);
-await page.screenshot({ path: `${out}/14-habits-lan.png` });
-
 await page.locator('.mobile-tab', { hasText: '更多' }).click();
 await page.waitForTimeout(350);
 await page.locator('.mobile-more-item', { hasText: '设置' }).click();

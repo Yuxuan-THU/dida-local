@@ -5,7 +5,6 @@ import {
   Copy,
   Database,
   Download,
-  ExternalLink,
   FileUp,
   FolderOpen,
   HardDriveDownload,
@@ -15,9 +14,6 @@ import {
   RotateCcw,
   ShieldCheck,
   Smartphone,
-  Sparkles,
-  Timer,
-  User,
   Info,
   Wifi,
   Cloud,
@@ -30,12 +26,11 @@ import { todayKey } from '../lib/date';
 import { useIsMobile } from '../lib/useMediaQuery';
 import { Modal, Segmented, cx } from '../components/ui';
 
-type Tab = 'appearance' | 'mobile' | 'focus' | 'notifications' | 'data' | 'shortcuts' | 'about';
+type Tab = 'appearance' | 'mobile' | 'notifications' | 'data' | 'shortcuts' | 'about';
 
 const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: 'appearance', label: '外观', icon: <Palette size={16} /> },
   { key: 'mobile', label: '手机访问', icon: <Smartphone size={16} /> },
-  { key: 'focus', label: '专注', icon: <Timer size={16} /> },
   { key: 'notifications', label: '提醒', icon: <Bell size={16} /> },
   { key: 'data', label: '数据', icon: <Database size={16} /> },
   { key: 'shortcuts', label: '快捷键', icon: <Keyboard size={16} /> },
@@ -57,7 +52,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
   const [preview, setPreview] = useState<TickTickPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [importRange, setImportRange] = useState<'future' | 'all'>('future');
-  const [importResult, setImportResult] = useState<{ tasks: number; lists: number; habits: number; completed: number } | null>(null);
+  const [importResult, setImportResult] = useState<{ tasks: number; lists: number; completed: number } | null>(null);
   const [confirmImport, setConfirmImport] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [name, setName] = useState('');
@@ -127,7 +122,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
     setConfirmImport(false);
     const result = await importTickTick({
       fromDate: importRange === 'future' ? todayKey() : null,
-      includeHabits: true,
+      includeHabits: false,
       keepFilters: false,
     });
     if (result) {
@@ -279,6 +274,18 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                     }}
                   />
                 </div>
+                <div className="setting-row">
+                  <span className="setting-label">每日任务目标</span>
+                  <div className="stepper">
+                    <button onClick={() => saveSettings({ dailyTaskGoal: Math.max(1, settings.dailyTaskGoal - 1) })}>−</button>
+                    <span>{settings.dailyTaskGoal} 个</span>
+                    <button onClick={() => saveSettings({ dailyTaskGoal: Math.min(50, settings.dailyTaskGoal + 1) })}>+</button>
+                  </div>
+                </div>
+                <div className="setting-row">
+                  <span className="setting-label">完成提示音</span>
+                  <button className={cx('toggle-switch', settings.sound && 'is-on')} onClick={() => saveSettings({ sound: !settings.sound })} aria-pressed={settings.sound}><span /></button>
+                </div>
               </div>
             )}
 
@@ -342,53 +349,6 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                     <p>请关闭并重新运行「启动滴答清单.cmd」，新版会以手机共享模式启动。</p>
                   </div>
                 )}
-              </div>
-            )}
-
-            {tab === 'focus' && (
-              <div className="settings-section">
-                <h3>专注</h3>
-                <p className="settings-lead">设置属于你的番茄节奏。</p>
-                {[
-                  { key: 'focus' as const, label: '专注时长', min: 5, max: 90, suffix: '分钟' },
-                  { key: 'short' as const, label: '短休息', min: 1, max: 30, suffix: '分钟' },
-                  { key: 'long' as const, label: '长休息', min: 5, max: 60, suffix: '分钟' },
-                ].map((item) => (
-                  <div className="setting-row" key={item.key}>
-                    <span className="setting-label">{item.label}</span>
-                    <div className="stepper">
-                      <button
-                        onClick={() => saveSettings({ pomodoro: { ...settings.pomodoro, [item.key]: Math.max(item.min, settings.pomodoro[item.key] - 1) } })}
-                        disabled={settings.pomodoro[item.key] <= item.min}
-                      >−</button>
-                      <span>{settings.pomodoro[item.key]} 分钟</span>
-                      <button
-                        onClick={() => saveSettings({ pomodoro: { ...settings.pomodoro, [item.key]: Math.min(item.max, settings.pomodoro[item.key] + 1) } })}
-                        disabled={settings.pomodoro[item.key] >= item.max}
-                      >+</button>
-                    </div>
-                  </div>
-                ))}
-                <div className="setting-row">
-                  <span className="setting-label">每日专注目标</span>
-                  <div className="stepper">
-                    <button onClick={() => saveSettings({ dailyFocusGoal: Math.max(30, settings.dailyFocusGoal - 15) })}>−</button>
-                    <span>{settings.dailyFocusGoal} 分钟</span>
-                    <button onClick={() => saveSettings({ dailyFocusGoal: Math.min(480, settings.dailyFocusGoal + 15) })}>+</button>
-                  </div>
-                </div>
-                <div className="setting-row">
-                  <span className="setting-label">每日任务目标</span>
-                  <div className="stepper">
-                    <button onClick={() => saveSettings({ dailyTaskGoal: Math.max(1, settings.dailyTaskGoal - 1) })}>−</button>
-                    <span>{settings.dailyTaskGoal} 个</span>
-                    <button onClick={() => saveSettings({ dailyTaskGoal: Math.min(50, settings.dailyTaskGoal + 1) })}>+</button>
-                  </div>
-                </div>
-                <div className="setting-row">
-                  <span className="setting-label">完成提示音</span>
-                  <button className={cx('toggle-switch', settings.sound && 'is-on')} onClick={() => saveSettings({ sound: !settings.sound })} aria-pressed={settings.sound}><span /></button>
-                </div>
               </div>
             )}
 
@@ -499,13 +459,12 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                       <span><strong>{importRange === 'future' ? preview.futureTasks : preview.tasks}</strong> 个任务</span>
                       <span><strong>{importRange === 'future' ? preview.futureCompleted : preview.completed}</strong> 个已完成</span>
                       <span><strong>{preview.lists}</strong> 个清单</span>
-                      <span><strong>{preview.habits}</strong> 个习惯</span>
                     </div>
                   )}
                   {!previewLoading && !preview && <p className="muted">没有检测到滴答清单数据（%APPDATA%\Tick_Tick\TickTick.db）。</p>}
                   {importResult && (
                     <div className="import-success">
-                      <Check size={15} /> 已导入 {importResult.tasks} 个任务、{importResult.lists} 个清单、{importResult.habits} 个习惯
+                      <Check size={15} /> 已导入 {importResult.tasks} 个任务、{importResult.lists} 个清单
                     </div>
                   )}
                   <div className="data-card-actions">
@@ -569,8 +528,6 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                     ['全局搜索', 'Ctrl / ⌘ + K'],
                     ['回到今天', 'T'],
                     ['打开日历', 'C'],
-                    ['开始专注', 'F'],
-                    ['打开习惯', 'H'],
                     ['关闭详情 / 弹窗', 'Esc'],
                     ['提交快速添加', 'Enter'],
                     ['换行（快速添加）', 'Shift + Enter'],
@@ -593,11 +550,11 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                   <span className="about-logo"><Check size={26} /></span>
                   <div>
                     <strong>滴答 · 本地清单</strong>
-                    <span>版本 1.0.0 · 本地优先</span>
+                    <span>版本 1.2.0 · 本地优先</span>
                   </div>
                 </div>
                 <p className="settings-lead">
-                  一个完全运行在本机的任务、日历、专注与习惯工具。界面与交互参考滴答清单的公开产品形态，代码与视觉素材均为独立实现，不包含原软件的任何专有代码或资源。
+                  一个完全运行在本机的任务与日历工具。界面与交互参考滴答清单的公开产品形态，代码与视觉素材均为独立实现，不包含原软件的任何专有代码或资源。
                 </p>
                 <div className="about-grid">
                   <div><span>数据存储</span><strong>SQLite（本机）</strong></div>
@@ -631,7 +588,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
           {importRange === 'future'
             ? `将只导入到期日在 ${todayKey()} 及以后的任务，今天之前的任务不会迁移。`
             : '将导入滴答清单的全部历史任务，包括已完成和已放弃的任务。'}
-          {' '}导入会替换当前的任务、清单、标签和习惯。导入前会自动生成一份 JSON 备份，保存在 <code>dida/data/backups</code>。
+          {' '}导入会替换当前的任务、清单、标签。导入前会自动生成一份 JSON 备份，保存在 <code>dida/data/backups</code>。
         </p>
       </Modal>
 
@@ -647,7 +604,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
           </>
         }
       >
-        <p className="modal-copy">当前所有任务、习惯和专注记录都会被删除，并恢复为演示数据。这个操作无法撤销。</p>
+        <p className="modal-copy">当前所有任务、清单和标签都会被删除，并恢复为演示数据。这个操作无法撤销。</p>
       </Modal>
     </>
   );

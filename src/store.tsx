@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api';
-import type { AppState, FocusSession, Habit, Settings, Tag, Task, TaskList, ToastItem } from './types';
+import type { AppState, Settings, Tag, Task, TaskList, ToastItem } from './types';
 import { dateKey } from './lib/date';
 
 interface AppContextValue {
@@ -21,15 +21,10 @@ interface AppContextValue {
   deleteList: (id: string) => Promise<void>;
   createTag: (name: string, color?: string) => Promise<Tag | null>;
   deleteTag: (id: string) => Promise<void>;
-  createHabit: (input: Partial<Habit>) => Promise<Habit | null>;
-  updateHabit: (id: string, patch: Partial<Habit>) => Promise<void>;
-  deleteHabit: (id: string) => Promise<void>;
-  toggleHabit: (habitId: string, date: string, done: boolean, value?: number) => Promise<void>;
   createFilter: (input: { name: string; query: Record<string, unknown>; color?: string }) => Promise<void>;
   deleteFilter: (id: string) => Promise<void>;
-  addFocus: (session: Partial<FocusSession>) => Promise<void>;
   saveSettings: (patch: Partial<Settings>) => Promise<void>;
-  importTickTick: (options?: { fromDate?: string | null; includeHabits?: boolean; keepFilters?: boolean }) => Promise<{ tasks: number; lists: number; habits: number; completed: number } | null>;
+  importTickTick: (options?: { fromDate?: string | null; includeHabits?: boolean; keepFilters?: boolean }) => Promise<{ tasks: number; lists: number; completed: number } | null>;
   importJson: (data: unknown) => Promise<void>;
   resetAll: () => Promise<void>;
   toast: (message: string, type?: ToastItem['type'], action?: ToastItem['action']) => void;
@@ -43,7 +38,6 @@ function mergeSettings(current: Settings, patch: Partial<Settings>): Settings {
   return {
     ...current,
     ...patch,
-    pomodoro: { ...current.pomodoro, ...(patch.pomodoro || {}) },
   };
 }
 
@@ -333,65 +327,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [toast],
   );
 
-  const createHabit = useCallback(
-    async (input: Partial<Habit>) => {
-      try {
-        const habit = await api.createHabit(input);
-        setState((s) => (s ? { ...s, habits: [...s.habits, habit] } : s));
-        toast('习惯已创建', 'success');
-        return habit;
-      } catch (err) {
-        toast(err instanceof Error ? err.message : '创建习惯失败', 'error');
-        return null;
-      }
-    },
-    [toast],
-  );
-
-  const updateHabit = useCallback(
-    async (id: string, patch: Partial<Habit>) => {
-      setState((s) => (s ? { ...s, habits: s.habits.map((h) => (h.id === id ? { ...h, ...patch } : h)) } : s));
-      try {
-        const habit = await api.updateHabit(id, patch);
-        setState((s) => (s ? { ...s, habits: s.habits.map((h) => (h.id === id ? habit : h)) } : s));
-      } catch (err) {
-        toast(err instanceof Error ? err.message : '更新习惯失败', 'error');
-      }
-    },
-    [toast],
-  );
-
-  const deleteHabit = useCallback(
-    async (id: string) => {
-      try {
-        await api.deleteHabit(id);
-        setState((s) => (s ? { ...s, habits: s.habits.filter((h) => h.id !== id) } : s));
-        toast('习惯已删除');
-      } catch (err) {
-        toast(err instanceof Error ? err.message : '删除失败', 'error');
-      }
-    },
-    [toast],
-  );
-
-  const toggleHabit = useCallback(
-    async (habitId: string, date: string, done: boolean, value = 1) => {
-      setState((s) => {
-        if (!s) return s;
-        const logs = s.habitLogs.filter((l) => !(l.habitId === habitId && l.date === date));
-        if (done) logs.push({ habitId, date, value, note: '', updatedAt: new Date().toISOString() });
-        return { ...s, habitLogs: logs };
-      });
-      try {
-        await api.checkinHabit(habitId, date, done ? value : 0);
-      } catch (err) {
-        toast(err instanceof Error ? err.message : '打卡失败', 'error');
-        refresh();
-      }
-    },
-    [refresh, toast],
-  );
-
   const createFilter = useCallback(
     async (input: { name: string; query: Record<string, unknown>; color?: string }) => {
       try {
@@ -412,22 +347,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setState((s) => (s ? { ...s, filters: s.filters.filter((f) => f.id !== id) } : s));
       } catch (err) {
         toast(err instanceof Error ? err.message : '删除过滤器失败', 'error');
-      }
-    },
-    [toast],
-  );
-
-  const addFocus = useCallback(
-    async (session: Partial<FocusSession>) => {
-      try {
-        const saved = await api.addFocus({
-          ...session,
-          endedAt: session.endedAt || new Date().toISOString(),
-          startedAt: session.startedAt || new Date().toISOString(),
-        });
-        setState((s) => (s ? { ...s, focusSessions: [saved, ...s.focusSessions] } : s));
-      } catch (err) {
-        toast(err instanceof Error ? err.message : '保存专注记录失败', 'error');
       }
     },
     [toast],
@@ -500,13 +419,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       deleteList,
       createTag,
       deleteTag,
-      createHabit,
-      updateHabit,
-      deleteHabit,
-      toggleHabit,
       createFilter,
       deleteFilter,
-      addFocus,
       saveSettings,
       importTickTick,
       importJson,
@@ -533,13 +447,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       deleteList,
       createTag,
       deleteTag,
-      createHabit,
-      updateHabit,
-      deleteHabit,
-      toggleHabit,
       createFilter,
       deleteFilter,
-      addFocus,
       saveSettings,
       importTickTick,
       importJson,

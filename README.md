@@ -1,7 +1,7 @@
 # 滴答 · 本地清单
 
 **一个离线优先、滴答清单风格的 Windows 桌面任务管理器。**
-任务、日历、番茄专注、习惯、四象限、搜索、提醒和主题都在本机运行，数据只写入本地 SQLite。
+任务、日历、搜索、提醒和主题都在本机运行，数据只写入本地 SQLite。
 
 [![Release](https://img.shields.io/github/v/release/Yuxuan-THU/dida-local?display_name=tag&style=flat-square)](https://github.com/Yuxuan-THU/dida-local/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-4f76f6?style=flat-square)](#下载与安装)
@@ -44,7 +44,7 @@ Dida Local 的目标很直接：
 
 - **本地优先**：不需要账号，数据存本机 SQLite，断网可用
 - **桌面原生体验**：独立窗口、系统托盘、全局快捷键，不是浏览器标签页
-- **保留滴答清单的使用习惯**：今天 / 最近 7 天 / 收集箱 / 清单 / 标签 / 四象限 / 番茄 / 习惯
+- **保留滴答清单的使用习惯**：今天 / 最近 7 天 / 收集箱 / 清单 / 标签 / 过滤器
 - **能把已有数据带过来**：读取本机滴答清单数据库，支持只迁移今天及以后
 - **代码可读、可改**：没有混淆，前端、服务端、数据库 schema 都是独立实现
 
@@ -56,33 +56,17 @@ Dida Local 的目标很直接：
 
 ### Windows 安装版（推荐）
 
-当前 Release 提供 **1.0.0 基础安装包** 和 **1.1.0 增量更新包**：
+当前 Release 提供 **1.2.0 精简版安装包**：
 
 | 文件 | 说明 |
 | --- | --- |
-| [DidaLocal-1.0.0-x64.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.0.0/DidaLocal-1.0.0-x64.exe) | 基础安装包，创建桌面/开始菜单快捷方式 |
-| [DidaLocal-1.1.0-update.zip](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.1.0/DidaLocal-1.1.0-update.zip) | 1.1.0 增量包，加入官方滴答自动同步 |
-| [DidaLocal-Portable-1.0.0.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.0.0/DidaLocal-Portable-1.0.0.exe) | 基础免安装版（不含 1.1 同步） |
+| [DidaLocal-1.2.0-x64.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.2.0/DidaLocal-1.2.0-x64.exe) | 安装包，创建桌面/开始菜单快捷方式 |
+| [DidaLocal-Portable-1.2.0.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.2.0/DidaLocal-Portable-1.2.0.exe) | 免安装版，双击直接运行 |
 
-安装 1.1.0 的步骤：
+1.2.0 移除了专注、习惯、矩阵、摘要四个模块，只保留任务、清单、日历、搜索、提醒和主题。
+升级时直接运行新安装包覆盖安装即可，数据库会保留。
 
-1. 先运行 `DidaLocal-1.0.0-x64.exe` 完成安装；
-2. 右键托盘图标退出「滴答清单」；
-3. 解压 `DidaLocal-1.1.0-update.zip`，在该目录运行：
-
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .\apply-update.ps1
-   ```
-
-4. 重新打开应用 → **设置 → 数据 → 开启官方滴答自动同步**。
-
-`apply-update.ps1` 会把 1.1.0 的 `app` 文件覆盖到：
-
-```text
-%LOCALAPPDATA%\Programs\dida-local\resources\app
-```
-
-不会改动你的数据库。也可以用源码直接构建完整的 1.1.0 安装包：
+也可以用源码构建：
 
 ```powershell
 npm run pack
@@ -140,7 +124,6 @@ npm run desktop
 - 标签汇总
 - 自定义过滤器（优先级、标签、日期、状态）
 - 全局搜索：任务、清单、标签、操作混合搜索
-- 摘要：今日进度、7 天完成/专注趋势、清单分布、20 周热力图
 - 可读取官方桌面版数据库，在后台自动镜像手机同步下来的任务
 
 ### 日历
@@ -150,29 +133,6 @@ npm run desktop
 - 拖拽任务改期
 - 点击日期快速添加
 - 点击任务打开详情
-
-### 专注
-
-- 专注 / 短休息 / 长休息
-- 进度环、开始 / 暂停 / 重置 / 跳过
-- 关联任务
-- 今日 / 最近 7 天统计
-- 完成提示音、系统通知、彩纸动效
-- 计时状态持久化，刷新或切页后继续
-
-### 习惯
-
-- 每日 / 每周指定星期
-- 一周七天打卡格、过去日期补卡
-- 目标计数（例如每天 8 杯水）
-- 当前连续、历史最佳、12 周热力图
-- 新建 / 编辑 / 删除习惯
-
-### 矩阵与摘要
-
-- 艾森豪威尔四象限
-- 拖动任务到其他象限，自动调整优先级和日期
-- 摘要面板集中查看进度、趋势、分布和即将到来
 
 ### 外观与系统
 
@@ -192,14 +152,6 @@ npm run desktop
 | 今天 | 日历 |
 | --- | --- |
 | ![今天](verify-shots/01-today.png) | ![日历](verify-shots/02-calendar.png) |
-
-| 专注 | 习惯 |
-| --- | --- |
-| ![专注](verify-shots/03-focus.png) | ![习惯](verify-shots/04-habits.png) |
-
-| 四象限 | 摘要 |
-| --- | --- |
-| ![矩阵](verify-shots/05-matrix.png) | ![摘要](verify-shots/06-summary.png) |
 
 | 深色模式 | 看板 |
 | --- | --- |
@@ -240,8 +192,8 @@ npm run pack
 
 产物在 `release/`：
 
-- `DidaLocal-1.1.0-x64.exe`
-- `DidaLocal-Portable-1.1.0.exe`
+- `DidaLocal-1.2.0-x64.exe`
+- `DidaLocal-Portable-1.2.0.exe`
 
 ### 目录与脚本
 
@@ -252,7 +204,7 @@ npm run start      生产模式启动 Node 服务
 npm run desktop    Electron 开发版
 npm run pack       构建 Windows 安装包 / 便携版
 npm run verify     Playwright 端到端截图验证
-npm run test:core  后端 28 项核心检查
+npm run test:core  后端 24 项核心检查
 ```
 
 ---
@@ -279,7 +231,7 @@ npm run test:core  后端 28 项核心检查
    %APPDATA%\DidaLocal\data\backups\
    ```
 
-导入只读取业务表（任务、清单、习惯、打卡），不会读取或上传登录 token、密码、附件。
+导入只读取业务表（任务、清单、标签），不会读取或上传登录 token、密码、附件。
 
 ### 命令行
 
@@ -301,8 +253,6 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 | `TaskModel.tag` | 标签 |
 | `TaskModel.parentId` | 子任务 |
 | `TaskModel.repeatFlag` | 每天 / 工作日 / 每周 / 每月 / 每年 |
-| `HabitModel` + `HabitCheckInModel` | 习惯与打卡 |
-| `PomodoroModel` | 专注记录 |
 
 > 兼容性基于本机 4.3.4.0 版本的数据库结构；不同版本字段可能变化，导入前请先备份。
 
@@ -323,7 +273,7 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 1. 打开本应用 → **设置 → 数据**
 2. 找到 **「官方滴答自动同步」**
 3. 选择范围：
-   - **全部消息**：全部任务、历史完成、清单、习惯和打卡
+   - **全部消息**：全部任务、历史完成和清单
    - **今天及以后**：只镜像今天及以后的任务
 4. 点击 **开启自动同步**
 
@@ -342,7 +292,7 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 同步内容：
 
 - 任务、子任务、状态、优先级、到期时间、标签、重复规则、提醒
-- 清单、看板视图、习惯、打卡、专注记录
+- 清单、看板视图
 - 删除/完成状态会跟随官方数据
 
 ### 这是单向镜像，不是双向写入
@@ -402,8 +352,6 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 | 全局搜索 | `Ctrl / ⌘ + K` |
 | 今天 | `T` |
 | 日历 | `C` |
-| 专注 | `F` |
-| 习惯 | `H` |
 | 关闭详情 / 弹窗 | `Esc` |
 | 提交快速添加 | `Enter` |
 | 快速添加换行 | `Shift + Enter` |
@@ -450,7 +398,7 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 ## 测试
 
 ```bash
-npm run test:core          # 28 项后端检查
+npm run test:core          # 24 项后端检查
 npm run test:import        # 全量导入测试
 npm run test:import:future # 只导入今天及以后
 npm run test:sync          # 官方数据库镜像与冲突保护
@@ -462,8 +410,8 @@ npm run verify:electron    # Electron 启动/关闭验证
 当前验证结果：
 
 - 桌面端 1440×960 全部主视图通过，**0 console error / page error**
-- 后端 28 项检查全部通过
-- 真实 4.8 MB 滴答清单数据库：约 2,900 个任务、2,600+ 个已完成、4 个清单、2 个习惯、60 条打卡导入通过
+- 后端 24 项检查全部通过
+- 真实 4.8 MB 滴答清单数据库：约 2,900 个任务、2,600+ 个已完成、4 个清单导入通过
 - `fromDate` 过滤测试确认不会导入早于今天的任务
 
 验证截图在 [`verify-shots/`](verify-shots/)。
@@ -510,7 +458,7 @@ REA 的命令、证据 ID、SHA-256、MVID 和限制都记录在 [REA-ANALYSIS.m
 dida-local/
 ├── src/                  React 前端
 │   ├── components/       Rail / Sidebar / TaskRow / UI
-│   ├── views/            Tasks / Calendar / Focus / Habits / Matrix / Summary / Settings
+│   ├── views/            Tasks / Calendar / Settings / Search
 │   └── lib/              日期、自然语言解析、选择器、声音
 ├── server/               Node API + SQLite + 导入器
 ├── electron/             Electron 主进程（托盘、快捷键、内嵌服务）

@@ -64,24 +64,14 @@ check('tag follows rename', store.getTask(task.id).tags.includes('改名标签')
 store.deleteTag(tag.id);
 check('tag removed from tasks', !store.getTask(task.id).tags.includes('改名标签'));
 
-const habit = store.createHabit({ name: '喝水', emoji: '💧', goal: 8, unit: '杯', frequency: { type: 'daily' } });
-check('create habit', habit?.name === '喝水');
-const log = store.checkinHabit(habit.id, localDate(), 3);
-check('checkin habit', log.value === 3);
-const state2 = store.getState();
-check('habit log saved', state2.habitLogs.some((l) => l.habitId === habit.id && l.value === 3));
-
-store.addFocusSession({ mode: 'focus', duration: 25, taskId: task.id });
-check('focus session saved', store.getState().focusSessions.some((s) => s.taskId === task.id));
-
 const filter = store.createFilter({ name: '高优', query: { priority: [3] } });
 check('create filter', filter?.name === '高优');
 store.deleteFilter(filter.id);
 check('delete filter', !store.getState().filters.some((f) => f.id === filter.id));
 
-store.saveSettings({ theme: 'dark', pomodoro: { ...store.getState().settings.pomodoro, focus: 30 } });
+store.saveSettings({ theme: 'dark', dailyTaskGoal: 7 });
 const settings = store.getState().settings;
-check('save nested settings', settings.theme === 'dark' && settings.pomodoro.focus === 30);
+check('save settings', settings.theme === 'dark' && settings.dailyTaskGoal === 7);
 
 const exportData = store.exportData();
 check('export state', exportData.app === 'dida-local' && Array.isArray(exportData.tasks));
