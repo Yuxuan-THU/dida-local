@@ -145,24 +145,12 @@ export function bumpRevision() {
 }
 
 function seedIfEmpty() {
-  const count = db.prepare('SELECT COUNT(*) AS c FROM lists').get().c;
+  const count = db.prepare('SELECT COUNT(*) AS c FROM tasks').get().c;
   if (count > 0) return;
 
   const now = new Date().toISOString();
   const today = localDate();
   const at = (dayOffset, time = '09:00') => localDateTime(new Date(`${addDays(today, dayOffset)}T${time}:00`));
-
-  const lists = [
-    { id: 'inbox', name: '收集箱', emoji: '📥', color: '#64748b', sort: 0, inbox: 1 },
-    { id: 'welcome', name: '欢迎', emoji: '👋', color: '#f59e0b', sort: 1000, inbox: 0 },
-    { id: 'work', name: '工作', emoji: '💼', color: '#4f76f6', sort: 2000, inbox: 0 },
-    { id: 'personal', name: '个人备忘', emoji: '🏠', color: '#10b981', sort: 3000, inbox: 0 },
-    { id: 'fitness', name: '锻炼计划', emoji: '🏃', color: '#8b5cf6', sort: 4000, inbox: 0 },
-  ];
-  const insertList = db.prepare(
-    'INSERT INTO lists(id,name,emoji,color,sort_order,is_inbox,view_mode,created_at) VALUES(?,?,?,?,?,?,?,?)',
-  );
-  for (const l of lists) insertList.run(l.id, l.name, l.emoji, l.color, l.sort, l.inbox, 'list', now);
 
   const tasks = [
     {
@@ -368,7 +356,7 @@ function seedIfEmpty() {
   tasks.forEach((t, i) => {
     insertTask.run(
       t.id,
-      t.list,
+      t.list || '',
       t.title,
       t.notes,
       t.status || 'open',
