@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -13,6 +14,7 @@ const META = {
   lastError: 'ticktick_sync_error',
   stats: 'ticktick_sync_stats',
   conflicts: 'ticktick_sync_conflicts',
+  hash: 'ticktick_sync_hash',
 };
 
 let timer = null;
@@ -58,6 +60,17 @@ function parseCount(value) {
   } catch {
     return {};
   }
+}
+
+function fingerprintOf(data) {
+  return crypto.createHash('sha256').update(JSON.stringify({
+    tasks: data.tasks,
+    lists: data.lists,
+    tags: data.tags,
+    habits: data.habits,
+    habitLogs: data.habitLogs,
+    focusSessions: data.focusSessions,
+  })).digest('hex');
 }
 
 export function getTickTickSyncStatus() {
@@ -192,7 +205,7 @@ function mergeSnapshot(data, lastSyncAt) {
       if (!localUpdated) {
         tasksStmt.insert.run(...tasksStmt.insertArgs(task));
         changed.added += 1;
-      } else {
+      } else if (localUpdated !== task.updatedAt) {
         tasksStmt.update.run(...tasksStmt.updateArgs(task));
         changed.updated += 1;
       }
@@ -242,9 +255,6 @@ function mergeSnapshot(data, lastSyncAt) {
     throw error;
   }
 
-  if (changed.added || changed.updated || changed.removed || changed.lists || changed.tags || changed.habits || changed.checkins || changed.focus) {
-    bumpRevision();
-  }
   return changed;
 }
 
@@ -272,9 +282,16 @@ export async function syncTickTick({ force = false } = {}) {
       keepFilters: true,
       dryRun: true,
     });
+    const fingerprint = fingerprintOf(built.data);
+    if (!force && fingerprint === getMeta(META.hash, '')) {
+      lastSignature = signature;
+      return { ok: true, skipped: true, reason: 'unchanged', status: getTickTickSyncStatus() };
+    }
     const lastSync = getMeta(META.lastSync, '') || null;
     const changed = mergeSnapshot(built.data, lastSync);
+    bumpRevision();
     const next = nowIso();
+    setMeta(META.hash, fingerprint);
     setMeta(META.lastSync, next);
     setMeta(META.stats, JSON.stringify({ ...built.stats, ...changed }));
     setMeta(META.conflicts, changed.conflicts);

@@ -108,6 +108,7 @@ export function inspectTickTick(filePath = defaultTickTickPath(), options = {}) 
   }
   const source = new DatabaseSync(filePath, { readOnly: true });
   try {
+    source.exec('PRAGMA busy_timeout = 3000;');
     const tables = new Set(source.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((r) => r.name));
     if (!tables.has('TaskModel') || !tables.has('ProjectModel')) {
       throw Object.assign(new Error('这个文件不是滴答清单数据库'), { status: 400 });
@@ -134,6 +135,7 @@ export function importTickTick(filePath = defaultTickTickPath(), options = {}) {
   const stats = inspectTickTick(filePath, { fromDate });
   const source = new DatabaseSync(filePath, { readOnly: true });
   try {
+    source.exec('PRAGMA busy_timeout = 3000;');
     const projectRows = source
       .prepare('SELECT id, name, Isinbox, color, viewMode FROM ProjectModel WHERE delete_status = 0 ORDER BY CAST(sortOrder AS REAL)')
       .all();
