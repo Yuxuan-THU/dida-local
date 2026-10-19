@@ -1,4 +1,4 @@
-import type { AppState, FocusSession, Habit, ImportStats, MobileInfo, SavedFilter, Settings, Tag, Task, TaskList, TickTickPreview } from './types';
+import type { AppState, FocusSession, Habit, ImportStats, MobileInfo, SavedFilter, Settings, Tag, Task, TaskList, TickTickPreview, TickTickSyncStatus } from './types';
 
 const TOKEN_KEY = 'dida-access-token';
 let accessToken = '';
@@ -101,6 +101,10 @@ export const api = {
     request<TickTickPreview>(`/api/import/ticktick/preview${fromDate ? `?fromDate=${encodeURIComponent(fromDate)}` : ''}`),
   importTickTick: (options: { fromDate?: string | null; includeHabits?: boolean; keepFilters?: boolean } = {}) =>
     request<ImportStats>('/api/import/ticktick', { method: 'POST', body: json(options) }),
+  ticktickSyncStatus: () => request<TickTickSyncStatus>('/api/ticktick/status'),
+  saveTicktickSync: (options: { enabled?: boolean; scope?: 'all' | 'future'; source?: string }) =>
+    request<TickTickSyncStatus>('/api/ticktick/settings', { method: 'POST', body: json(options) }),
+  syncTicktick: () => request<{ ok: boolean; error?: string; changed?: Record<string, number>; status?: TickTickSyncStatus }>('/api/ticktick/sync', { method: 'POST', body: json({}) }),
   importJson: (data: unknown) => request<AppState>('/api/import/json', { method: 'POST', body: json(data) }),
   reset: () => request<AppState>('/api/reset', { method: 'POST', body: json({}) }),
   get exportUrl() {

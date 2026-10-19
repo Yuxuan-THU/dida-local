@@ -38,6 +38,12 @@ import {
   resetAll,
 } from './store.mjs';
 import { importTickTick, inspectTickTick, defaultTickTickPath } from './importer.mjs';
+import {
+  getTickTickSyncStatus,
+  setTickTickSyncSettings,
+  syncTickTick,
+  startTickTickSync,
+} from './ticktick-sync.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
@@ -290,6 +296,15 @@ async function handleApi(req, res, url) {
 
   if (pathname === '/api/settings' && method === 'POST') return json(res, 200, saveSettings(body));
 
+  if (pathname === '/api/ticktick/status' && method === 'GET') {
+    return json(res, 200, getTickTickSyncStatus());
+  }
+  if (pathname === '/api/ticktick/settings' && method === 'POST') {
+    return json(res, 200, setTickTickSyncSettings(body));
+  }
+  if (pathname === '/api/ticktick/sync' && method === 'POST') {
+    return json(res, 200, await syncTickTick({ force: true }));
+  }
   if (pathname === '/api/import/ticktick/preview' && method === 'GET') {
     const custom = searchParams.get('path');
     const fromDate = searchParams.get('fromDate');
@@ -357,6 +372,7 @@ export async function startServer({ port = PORT, dev = false, open = false } = {
 
   const url = `http://127.0.0.1:${port}/`;
   console.log(`\n  滴答 · 本地清单已启动：${url}\n`);
+  startTickTickSync();
   if (MOBILE) {
     const token = mobileToken();
     const urls = lanAddresses().map((ip) => `http://${ip}:${port}/?token=${encodeURIComponent(token)}`);

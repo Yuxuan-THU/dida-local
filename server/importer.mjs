@@ -91,6 +91,17 @@ function habitFrequency(raw) {
   return { type: 'daily' };
 }
 
+function reminderOffset(raw) {
+  const match = String(raw || '').match(/^TRIGGER:([+-])?P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/i);
+  if (!match) return null;
+  const sign = match[1] === '+' ? 1 : -1;
+  const days = Number(match[2]) || 0;
+  const hours = Number(match[3]) || 0;
+  const minutes = Number(match[4]) || 0;
+  const seconds = Number(match[5]) || 0;
+  return Math.min(10080, Math.max(0, Math.round(-sign * (days * 1440 + hours * 60 + minutes + seconds / 60))));
+}
+
 export function inspectTickTick(filePath = defaultTickTickPath(), options = {}) {
   if (!fs.existsSync(filePath)) {
     throw Object.assign(new Error(`没有找到滴答清单数据库：${filePath}`), { status: 404 });
@@ -135,6 +146,19 @@ export function importTickTick(filePath = defaultTickTickPath(), options = {}) {
         ORDER BY CAST(sortOrder AS REAL), createdTime
       `)
       .all();
+    const remindersByTask = new Map();
+    try {
+      const reminderRows = source.prepare('SELECT taskserverid, trigger FROM TaskReminderModel').all();
+      for (const row of reminderRows) {
+        const offset = reminderOffset(row.trigger);
+        if (offset == null || !row.taskserverid) continue;
+        if (!remindersByTask.has(row.taskserverid)) remindersByTask.set(row.taskserverid, []);
+        const list = remindersByTask.get(row.taskserverid);
+        if (!list.includes(offset)) list.push(offset);
+      }
+    } catch {
+      // Reminders are optional in older databases.
+    }
     const tagRows = source.prepare('SELECT name, color FROM TagModel WHERE deleted = 0 OR deleted IS NULL').all();
     const habitRows = source.prepare('SELECT Id, Name, IconRes, Color, Goal, Step, Unit, RepeatRule, Encouragement, CreatedTime, Status FROM HabitModel ORDER BY CAST(SortOrder AS REAL)').all();
     const checkinRows = source.prepare('SELECT HabitId, CheckinStamp, CheckinTime, Value, Status FROM HabitCheckInModel ORDER BY CheckinTime').all();
@@ -240,7 +264,7 @@ export function importTickTick(filePath = defaultTickTickPath(), options = {}) {
           done: child.status === 2,
         })),
         repeatRule: parseRrule(row.repeatFlag),
-        reminders: [],
+        reminders: remindersByTask.get(row.id) || [],
         estimate: 0,
         focusedSeconds: 0,
         stage: row.status === 2 ? 'done' : 'todo',
@@ -312,10 +336,6 @@ export function importTickTick(filePath = defaultTickTickPath(), options = {}) {
       // Optional table.
     }
 
-    fs.mkdirSync(path.join(DATA_DIR, 'backups'), { recursive: true });
-    const backupPath = path.join(DATA_DIR, 'backups', `before-ticktick-${Date.now()}.json`);
-    fs.writeFileSync(backupPath, JSON.stringify(exportData(), null, 2), 'utf8');
-
     const data = {
       lists,
       tags,
@@ -326,18 +346,27 @@ export function importTickTick(filePath = defaultTickTickPath(), options = {}) {
       filters: options.keepFilters ? current.filters : [],
       settings: { ...current.settings, userName },
     };
+    const resultStats = {
+      lists: lists.length,
+      tasks: tasks.length,
+      completed: tasks.filter((t) => t.status === 'completed').length,
+      tags: tags.length,
+      habits: habits.length,
+      checkins: habitLogs.length,
+      focusSessions: focusSessions.length,
+    };
+    if (options.dryRun) {
+      return { ok: true, dryRun: true, data, stats: resultStats, source: filePath };
+    }
+
+    fs.mkdirSync(path.join(DATA_DIR, 'backups'), { recursive: true });
+    const backupPath = path.join(DATA_DIR, 'backups', `before-ticktick-${Date.now()}.json`);
+    fs.writeFileSync(backupPath, JSON.stringify(exportData(), null, 2), 'utf8');
+
     replaceAll(data);
     return {
       ok: true,
-      stats: {
-        lists: lists.length,
-        tasks: tasks.length,
-        completed: tasks.filter((t) => t.status === 'completed').length,
-        tags: tags.length,
-        habits: habits.length,
-        checkins: habitLogs.length,
-        focusSessions: focusSessions.length,
-      },
+      stats: resultStats,
       backupPath,
       source: filePath,
     };

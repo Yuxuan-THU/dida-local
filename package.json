@@ -1,6 +1,6 @@
 {
   "name": "dida-local",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "滴答清单风格的本地优先任务管理应用（独立实现）",
@@ -39,7 +39,8 @@
     "test:core": "node --disable-warning=ExperimentalWarning scripts/test-core.mjs",
     "test:import": "node --disable-warning=ExperimentalWarning scripts/test-import.mjs",
     "test:import:future": "node --disable-warning=ExperimentalWarning scripts/test-import-future.mjs",
-    "import:ticktick": "node --disable-warning=ExperimentalWarning scripts/import-ticktick.mjs"
+    "import:ticktick": "node --disable-warning=ExperimentalWarning scripts/import-ticktick.mjs",
+    "test:sync": "node --disable-warning=ExperimentalWarning scripts/test-sync.mjs"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
@@ -81,11 +82,15 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "assets/app.ico",
@@ -104,7 +109,9 @@
       "uninstallerIcon": "assets/app.ico",
       "installerHeaderIcon": "assets/app.ico",
       "deleteAppDataOnUninstall": false,
-      "installerLanguages": ["zh_CN"]
+      "installerLanguages": [
+        "zh_CN"
+      ]
     },
     "portable": {
       "artifactName": "DidaLocal-Portable-${version}.${ext}",

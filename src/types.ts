@@ -191,6 +191,28 @@ export interface ImportStats {
   source: string;
 }
 
+export interface TickTickSyncStatus {
+  enabled: boolean;
+  scope: 'all' | 'future';
+  source: string;
+  sourceExists: boolean;
+  running: boolean;
+  lastSync: string | null;
+  lastError: string | null;
+  conflicts: number;
+  stats: {
+    tasks?: number;
+    completed?: number;
+    lists?: number;
+    habits?: number;
+    checkins?: number;
+    added?: number;
+    updated?: number;
+    removed?: number;
+    conflicts?: number;
+  };
+}
+
 export interface TickTickPreview {
   path: string;
   tasks: number;

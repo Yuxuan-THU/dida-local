@@ -11,6 +11,7 @@ import {
   HardDriveDownload,
   Keyboard,
   Palette,
+  RefreshCw,
   RotateCcw,
   ShieldCheck,
   Smartphone,
@@ -19,10 +20,12 @@ import {
   User,
   Info,
   Wifi,
+  Cloud,
+  AlertTriangle,
 } from 'lucide-react';
 import { useApp } from '../store';
 import { api } from '../api';
-import type { MobileInfo, TickTickPreview } from '../types';
+import type { MobileInfo, TickTickPreview, TickTickSyncStatus } from '../types';
 import { todayKey } from '../lib/date';
 import { useIsMobile } from '../lib/useMediaQuery';
 import { Modal, Segmented, cx } from '../components/ui';
@@ -48,7 +51,7 @@ const WALLPAPERS: { key: string; label: string; className: string }[] = [
 ];
 
 export function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { state, saveSettings, importTickTick, importJson, resetAll, toast } = useApp();
+  const { state, saveSettings, importTickTick, importJson, resetAll, refresh, toast } = useApp();
   const isPhone = useIsMobile();
   const [tab, setTab] = useState<Tab>('appearance');
   const [preview, setPreview] = useState<TickTickPreview | null>(null);
@@ -61,6 +64,8 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
   const [mobileInfo, setMobileInfo] = useState<MobileInfo | null>(null);
   const [mobileError, setMobileError] = useState<string | null>(null);
   const [mobileLoading, setMobileLoading] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<TickTickSyncStatus | null>(null);
+  const [syncBusy, setSyncBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -85,6 +90,20 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
       .catch((error) => setMobileError(error instanceof Error ? error.message : '手机访问未开启'))
       .finally(() => setMobileLoading(false));
   }, [isPhone, tab, open, mobileInfo, mobileLoading, mobileError]);
+
+  useEffect(() => {
+    if (tab !== 'data' || !open) return;
+    let active = true;
+    const load = () => api.ticktickSyncStatus()
+      .then((status) => { if (active) setSyncStatus(status); })
+      .catch(() => {});
+    load();
+    const timer = window.setInterval(load, 5000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [tab, open]);
 
   if (!state) return null;
   const settings = state.settings;
@@ -114,6 +133,35 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
     if (result) {
       setImportResult(result);
       setPreview(null);
+    }
+  };
+
+  const changeSync = async (patch: { enabled?: boolean; scope?: 'all' | 'future' }) => {
+    try {
+      const next = await api.saveTicktickSync(patch);
+      setSyncStatus(next);
+      toast(next.enabled ? '官方滴答自动同步已开启' : '官方滴答自动同步已关闭', next.enabled ? 'success' : 'info');
+    } catch (error) {
+      toast(error instanceof Error ? error.message : '保存同步设置失败', 'error');
+    }
+  };
+
+  const runSyncNow = async () => {
+    setSyncBusy(true);
+    try {
+      const result = await api.syncTicktick();
+      if (result.status) setSyncStatus(result.status);
+      if (result.ok) {
+        await refresh();
+        const changed = result.changed || {};
+        toast(`同步完成：新增 ${changed.added || 0}，更新 ${changed.updated || 0}`, 'success');
+      } else {
+        toast(result.error || '同步失败', 'error');
+      }
+    } catch (error) {
+      toast(error instanceof Error ? error.message : '同步失败', 'error');
+    } finally {
+      setSyncBusy(false);
     }
   };
 
@@ -371,6 +419,59 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
               <div className="settings-section">
                 <h3>数据</h3>
                 <p className="settings-lead">数据保存在这台电脑上，随时可以迁移或备份。</p>
+
+                <div className="data-card sync-card">
+                  <div className="data-card-head">
+                    <span className="data-icon sync"><RefreshCw size={20} className={syncStatus?.running ? 'is-spinning' : ''} /></span>
+                    <div>
+                      <strong>
+                        官方滴答自动同步
+                        <span className={cx('sync-state', syncStatus?.enabled && 'is-on')}>{syncStatus?.enabled ? '已开启' : '已关闭'}</span>
+                      </strong>
+                      <span>读取官方桌面版数据库，手机上的改动会经官方同步进入这里</span>
+                    </div>
+                  </div>
+                  {!syncStatus && <p className="muted">正在读取同步状态…</p>}
+                  {syncStatus && (
+                    <>
+                      <div className="sync-scope-row">
+                        <span>同步范围</span>
+                        <Segmented
+                          value={syncStatus.scope}
+                          onChange={(value) => changeSync({ scope: value as 'all' | 'future' })}
+                          options={[
+                            { value: 'all', label: '全部消息' },
+                            { value: 'future', label: '今天及以后' },
+                          ]}
+                          size="small"
+                        />
+                      </div>
+                      <div className="sync-summary">
+                        <span>上次同步：<strong>{syncStatus.lastSync ? new Date(syncStatus.lastSync).toLocaleString('zh-CN') : '尚未同步'}</strong></span>
+                        <span>{syncStatus.stats.tasks ? `官方 ${syncStatus.stats.tasks} 条任务` : '等待首次同步'}</span>
+                        {syncStatus.conflicts > 0 && <span className="sync-conflict"><AlertTriangle size={12} /> {syncStatus.conflicts} 条本地修改未覆盖</span>}
+                      </div>
+                      {!syncStatus.sourceExists && (
+                        <div className="sync-warning"><AlertTriangle size={14} /> 找不到官方滴答数据库，请先安装并至少运行一次官方客户端。</div>
+                      )}
+                      {syncStatus.lastError && (
+                        <div className="sync-warning"><AlertTriangle size={14} /> {syncStatus.lastError}</div>
+                      )}
+                      <p className="sync-caution">
+                        单向镜像：官方 → 本地。官方客户端需要保持在后台运行；在本应用内做的修改暂时不会写回官方或手机。
+                      </p>
+                      <div className="data-card-actions">
+                        <button className="btn primary" onClick={runSyncNow} disabled={syncBusy || !syncStatus.sourceExists}>
+                          <RefreshCw size={14} className={syncBusy ? 'is-spinning' : ''} /> {syncBusy ? '同步中…' : '立即同步'}
+                        </button>
+                        <button className="btn ghost" onClick={() => changeSync({ enabled: !syncStatus.enabled })}>
+                          {syncStatus.enabled ? '关闭自动同步' : '开启自动同步'}
+                        </button>
+                      </div>
+                      <div className="sync-source"><Cloud size={13} /> {syncStatus.source}</div>
+                    </>
+                  )}
+                </div>
 
                 <div className="data-card">
                   <div className="data-card-head">
