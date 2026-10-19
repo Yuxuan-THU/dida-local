@@ -200,7 +200,7 @@ npm run start      生产模式启动 Node 服务
 npm run desktop    Electron 开发版
 npm run pack       构建 Windows 安装包 / 便携版
 npm run verify     Playwright 端到端截图验证
-npm run test:core  后端 24 项核心检查
+npm run test:core  后端 23 项核心检查
 ```
 
 ---
@@ -392,7 +392,7 @@ npm run import:ticktick -- "D:\path\to\TickTick.db"
 ## 测试
 
 ```bash
-npm run test:core          # 24 项后端检查
+npm run test:core          # 23 项后端检查
 npm run test:import        # 全量导入测试
 npm run test:import:future # 只导入今天及以后
 npm run test:sync          # 官方数据库镜像与冲突保护
@@ -404,7 +404,7 @@ npm run verify:electron    # Electron 启动/关闭验证
 当前验证结果：
 
 - 桌面端 1440×960 全部主视图通过，**0 console error / page error**
-- 后端 24 项检查全部通过
+- 后端 23 项检查全部通过
 - 真实 4.8 MB 滴答清单数据库：约 2,900 个任务、2,600+ 个已完成导入通过
 - `fromDate` 过滤测试确认不会导入早于今天的任务
 

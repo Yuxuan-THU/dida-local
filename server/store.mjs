@@ -115,9 +115,12 @@ function readSettings() {
 
 export function getState() {
   const db = getDb();
-  const lists = db.prepare('SELECT * FROM lists WHERE archived = 0 AND deleted_at IS NULL ORDER BY sort_order, created_at').all().map(mapList);
   const tags = db.prepare('SELECT * FROM tags ORDER BY created_at').all().map(mapTag);
-  const tasks = db.prepare('SELECT * FROM tasks ORDER BY sort_order, created_at').all().map(mapTask);
+  const tasks = db.prepare('SELECT * FROM tasks ORDER BY sort_order, created_at').all().map((row) => {
+    const task = mapTask(row);
+    delete task.listId;
+    return task;
+  });
   const habits = db.prepare('SELECT * FROM habits WHERE archived = 0 AND deleted_at IS NULL ORDER BY sort_order, created_at').all().map(mapHabit);
   const habitLogs = db.prepare('SELECT * FROM habit_logs ORDER BY date').all().map((r) => ({
     habitId: r.habit_id,
@@ -129,7 +132,7 @@ export function getState() {
   const focusSessions = db.prepare('SELECT * FROM focus_sessions ORDER BY started_at DESC').all().map(mapFocus);
   const filters = db.prepare('SELECT * FROM filters ORDER BY sort_order, created_at').all().map(mapFilter);
   return {
-    lists,
+    lists: [],
     tags,
     tasks,
     habits,
@@ -569,9 +572,10 @@ export function exportData() {
 }
 
 export function replaceAll(data) {
-  if (!data || !Array.isArray(data.lists) || !Array.isArray(data.tasks)) {
+  if (!data || !Array.isArray(data.tasks)) {
     throw Object.assign(new Error('备份格式不正确'), { status: 400 });
   }
+  const lists = Array.isArray(data.lists) ? data.lists : [];
   const db = getDb();
   db.exec('BEGIN');
   try {
@@ -579,7 +583,7 @@ export function replaceAll(data) {
     const listStmt = db.prepare(
       'INSERT INTO lists(id,name,emoji,color,sort_order,is_inbox,view_mode,archived,created_at) VALUES(?,?,?,?,?,?,?,?,?)',
     );
-    for (const l of data.lists) {
+    for (const l of lists) {
       listStmt.run(l.id, l.name, l.emoji || '📋', l.color || '#4f76f6', Number(l.sortOrder) || 0, l.isInbox ? 1 : 0, l.viewMode || 'list', l.archived ? 1 : 0, l.createdAt || nowIso());
     }
     const taskStmt = db.prepare(`

@@ -16,15 +16,11 @@ const check = (name, condition, detail = '') => {
 };
 
 let state = store.getState();
-check('seed lists', state.lists.length >= 4, `${state.lists.length}`);
+check('no lists exposed', state.lists.length === 0, `${state.lists.length}`);
 check('seed tasks', state.tasks.length >= 10, `${state.tasks.length}`);
-
-const list = store.createList({ name: '测试清单', emoji: '🧪', color: '#4f76f6' });
-check('create list', list?.name === '测试清单');
 
 const task = store.createTask({
   title: '每天阅读',
-  listId: list.id,
   priority: 2,
   dueAt: localDate(),
   allDay: true,
