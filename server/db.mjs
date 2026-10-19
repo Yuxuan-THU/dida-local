@@ -156,8 +156,8 @@ function seedIfEmpty() {
     {
       id: 'seed-1',
       list: 'welcome',
-      title: '欢迎来到滴答 · 本地清单',
-      notes: '这是一份完全运行在你电脑上的清单。\n\n· 按 Q 快速添加任务\n· 按 Ctrl/⌘ + K 搜索一切\n· 点击任务标题打开详情\n· 在「设置 → 数据」里可以一键导入已有的滴答清单数据',
+      title: '欢迎来到滴答 · 本地任务',
+      notes: '这是一组完全运行在你电脑上的任务。\n\n· 按 Q 快速添加任务\n· 按 Ctrl/⌘ + K 搜索一切\n· 点击任务标题打开详情\n· 在「设置 → 数据」里可以一键导入已有的滴答清单数据',
       priority: 0,
       due: today,
       time: null,
@@ -267,7 +267,7 @@ function seedIfEmpty() {
     {
       id: 'seed-10',
       list: 'inbox',
-      title: '整理灵感清单',
+      title: '整理灵感',
       notes: '把散落在备忘录里的想法归到一个地方。',
       priority: 0,
       due: null,
