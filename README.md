@@ -56,12 +56,37 @@ Dida Local 的目标很直接：
 
 ### Windows 安装版（推荐）
 
-前往 **[Releases](https://github.com/Yuxuan-THU/dida-local/releases/latest)** 下载：
+当前 Release 提供 **1.0.0 基础安装包** 和 **1.1.0 增量更新包**：
 
 | 文件 | 说明 |
 | --- | --- |
-| `DidaLocal-1.1.0-x64.exe` | 安装版，创建桌面和开始菜单快捷方式 |
-| `DidaLocal-Portable-1.1.0.exe` | 免安装版，双击直接运行 |
+| [DidaLocal-1.0.0-x64.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.0.0/DidaLocal-1.0.0-x64.exe) | 基础安装包，创建桌面/开始菜单快捷方式 |
+| [DidaLocal-1.1.0-update.zip](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.1.0/DidaLocal-1.1.0-update.zip) | 1.1.0 增量包，加入官方滴答自动同步 |
+| [DidaLocal-Portable-1.0.0.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.0.0/DidaLocal-Portable-1.0.0.exe) | 基础免安装版（不含 1.1 同步） |
+
+安装 1.1.0 的步骤：
+
+1. 先运行 `DidaLocal-1.0.0-x64.exe` 完成安装；
+2. 右键托盘图标退出「滴答清单」；
+3. 解压 `DidaLocal-1.1.0-update.zip`，在该目录运行：
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\apply-update.ps1
+   ```
+
+4. 重新打开应用 → **设置 → 数据 → 开启官方滴答自动同步**。
+
+`apply-update.ps1` 会把 1.1.0 的 `app` 文件覆盖到：
+
+```text
+%LOCALAPPDATA%\Programs\dida-local\resources\app
+```
+
+不会改动你的数据库。也可以用源码直接构建完整的 1.1.0 安装包：
+
+```powershell
+npm run pack
+```
 
 安装后可以从以下位置打开：
 
