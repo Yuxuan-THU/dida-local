@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">滴答 · 本地</string>
+    <string name="setup_title">连接电脑上的滴答</string>
+    <string name="setup_hint">电脑端打开「设置 → 手机访问」，把地址和访问码填到下面。</string>
+    <string name="url_hint">服务器地址，例如 http://192.168.1.2:4317</string>
+    <string name="token_hint">访问码</string>
+    <string name="connect">连接</string>
+    <string name="refresh">刷新</string>
+    <string name="change_server">更改服务器</string>
+</resources>

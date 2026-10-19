@@ -1,0 +1,10 @@
+$javaHome = 'C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot'
+$jar = Join-Path $PSScriptRoot '..\..\tools\jadx\jadx-headless-mcp-0.7.1-all.jar'
+$apktool = Join-Path $PSScriptRoot '..\..\tools\apktool\apktool.cmd'
+$env:JAVA_HOME = $javaHome
+$env:Path = "$javaHome\bin;$env:Path"
+$env:REA_JADX_MCP_JAR = (Resolve-Path $jar).Path
+$env:REA_APKTOOL_COMMAND = (Resolve-Path $apktool).Path
+Write-Host "JAVA_HOME=$env:JAVA_HOME"
+Write-Host "REA_JADX_MCP_JAR=$env:REA_JADX_MCP_JAR"
+Write-Host "REA_APKTOOL_COMMAND=$env:REA_APKTOOL_COMMAND"

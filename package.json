@@ -1,0 +1,114 @@
+{
+  "name": "dida-local",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "滴答清单风格的本地优先任务管理应用（独立实现）",
+  "author": "Yuxuan Su",
+  "license": "MIT",
+  "homepage": "https://github.com/Yuxuan-THU/dida-local",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yuxuan-THU/dida-local.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Yuxuan-THU/dida-local/issues"
+  },
+  "keywords": [
+    "ticktick",
+    "todo",
+    "task-manager",
+    "electron",
+    "react",
+    "sqlite",
+    "offline-first"
+  ],
+  "scripts": {
+    "dev": "node --disable-warning=ExperimentalWarning server/server.mjs --dev --open",
+    "build": "vite build",
+    "start": "node --disable-warning=ExperimentalWarning server/server.mjs",
+    "desktop": "npm run build && node scripts/electron-launch.mjs",
+    "pack": "npm run build && electron-builder --win nsis portable",
+    "pack:dir": "npm run build && electron-builder --dir",
+    "verify": "node scripts/verify.mjs",
+    "verify:extra": "node scripts/verify-extra.mjs",
+    "verify:mobile": "node scripts/verify-mobile.mjs",
+    "verify:electron": "node scripts/verify-electron.mjs",
+    "apk:build": "node scripts/build-apk.mjs",
+    "apk:install": "node scripts/install-apk.mjs",
+    "test:core": "node --disable-warning=ExperimentalWarning scripts/test-core.mjs",
+    "test:import": "node --disable-warning=ExperimentalWarning scripts/test-import.mjs",
+    "test:import:future": "node --disable-warning=ExperimentalWarning scripts/test-import-future.mjs",
+    "import:ticktick": "node --disable-warning=ExperimentalWarning scripts/import-ticktick.mjs"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.552.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "electron": "^39.1.2",
+    "electron-builder": "^26.15.3",
+    "playwright-core": "^1.56.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.1"
+  },
+  "main": "electron/main.cjs",
+  "build": {
+    "appId": "com.local.dida",
+    "productName": "滴答清单",
+    "artifactName": "DidaLocal-${version}-${arch}.${ext}",
+    "asar": false,
+    "compression": "normal",
+    "npmRebuild": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "server/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/app.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "滴答清单",
+      "uninstallDisplayName": "滴答清单",
+      "installerIcon": "assets/app.ico",
+      "uninstallerIcon": "assets/app.ico",
+      "installerHeaderIcon": "assets/app.ico",
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": ["zh_CN"]
+    },
+    "portable": {
+      "artifactName": "DidaLocal-Portable-${version}.${ext}",
+      "requestExecutionLevel": "user"
+    }
+  }
+}
