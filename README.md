@@ -54,22 +54,20 @@ Dida Local 的目标很直接：
 
 ## 下载与安装
 
-### Windows 安装版（推荐）
+### Windows 免安装版
 
-当前 Release 提供 **1.3.0 无清单版安装包**：
+当前 Release 提供 **1.4.0 无清单精简版**：
 
 | 文件 | 说明 |
 | --- | --- |
-| [DidaLocal-1.3.0-x64.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.3.0/DidaLocal-1.3.0-x64.exe) | 安装包，创建桌面/开始菜单快捷方式 |
-| [DidaLocal-Portable-1.3.0.exe](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.3.0/DidaLocal-Portable-1.3.0.exe) | 免安装版，双击直接运行 |
+| [DidaLocal-1.4.0-win-x64.zip](https://github.com/Yuxuan-THU/dida-local/releases/download/v1.4.0/DidaLocal-1.4.0-win-x64.zip) | 解压后双击 `滴答清单.exe` 运行 |
 
-1.3.0 移除了清单和收集箱：任务不再需要选择归属，创建后就是一条独立任务。
-升级时直接运行新安装包覆盖安装即可，数据库会保留。
+1.4.0 移除了清单和收集箱，任务不再需要选择归属；「今天」只显示当天任务；日历右侧输入支持自然语言时间；任务详情只保留标题、描述、日期和提醒。
 
 也可以用源码构建：
 
 ```powershell
-npm run pack
+npm run pack:dir
 ```
 
 安装后可以从以下位置打开：
@@ -182,16 +180,13 @@ npm run dev
 npm run desktop
 ```
 
-### 构建 Windows 安装包
+### 构建 Windows 程序
 
 ```bash
-npm run pack
+npm run pack:dir
 ```
 
-产物在 `release/`：
-
-- `DidaLocal-1.3.0-x64.exe`
-- `DidaLocal-Portable-1.3.0.exe`
+产物在 `release/win-unpacked/`，双击 `滴答清单.exe` 运行。需要压缩分发时，把整个目录打包成 zip 即可。
 
 ### 目录与脚本
 

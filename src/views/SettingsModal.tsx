@@ -549,7 +549,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
                   <span className="about-logo"><Check size={26} /></span>
                   <div>
                     <strong>滴答 · 本地任务</strong>
-                    <span>版本 1.3.0 · 本地优先</span>
+                    <span>版本 1.4.0 · 本地优先</span>
                   </div>
                 </div>
                 <p className="settings-lead">
