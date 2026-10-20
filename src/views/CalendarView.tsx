@@ -5,7 +5,8 @@ import { ChevronLeft, ChevronRight, Plus, CalendarDays, Check } from 'lucide-rea
 import { motion } from 'framer-motion';
 import { useApp } from '../store';
 import type { Task } from '../types';
-import { dateKey, dueMinutes, monthGrid, monthLabel, parseDateKey, todayKey, weekDates, WEEKDAYS } from '../lib/date';
+import { dateKey, dueMinutes, formatDue, monthGrid, monthLabel, parseDateKey, todayKey, weekDates, WEEKDAYS } from '../lib/date';
+import { parseQuickAdd } from '../lib/parse';
 import { useIsMobile } from '../lib/useMediaQuery';
 import { Checkbox, EmptyState, IconButton, Segmented, cx } from '../components/ui';
 
@@ -22,6 +23,10 @@ export function CalendarView({ onOpenTask }: { onOpenTask: (id: string) => void 
   const [quickTitle, setQuickTitle] = useState('');
   const [dragging, setDragging] = useState<string | null>(null);
   const [dragOverDay, setDragOverDay] = useState<string | null>(null);
+  const quickParsed = useMemo(
+    () => parseQuickAdd(quickTitle, parseDateKey(selectedDay)),
+    [quickTitle, selectedDay],
+  );
 
   const visibleTasks = useMemo(
     () => (state?.tasks || []).filter((t) => !t.deletedAt && t.status !== 'abandoned'),
@@ -93,7 +98,16 @@ export function CalendarView({ onOpenTask }: { onOpenTask: (id: string) => void 
   const addQuick = async () => {
     const title = quickTitle.trim();
     if (!title) return;
-    const task = await createTask({ title, dueAt: selectedDay, allDay: true });
+    const parsed = parseQuickAdd(title, parseDateKey(selectedDay));
+    const dueAt = parsed.dueAt || selectedDay;
+    const task = await createTask({
+      title: parsed.title,
+      dueAt,
+      allDay: parsed.dueAt ? parsed.allDay : true,
+      priority: parsed.priority,
+      tags: parsed.tags,
+      repeatRule: parsed.repeatRule,
+    });
     setQuickTitle('');
     if (task) {
       toast('任务已添加到这一天', 'success');
@@ -253,12 +267,18 @@ export function CalendarView({ onOpenTask }: { onOpenTask: (id: string) => void 
             <input
               value={quickTitle}
               onChange={(event) => setQuickTitle(event.target.value)}
-              placeholder="添加到这一天"
+              placeholder="输入任务或时间，如：下午 3 点 开会"
               onKeyDown={(event) => {
                 if (event.key === 'Enter') addQuick();
               }}
             />
           </div>
+          {quickTitle.trim() && (
+            <div className="calendar-quick-preview">
+              <span>{quickParsed.title}</span>
+              <strong>{formatDue({ dueAt: quickParsed.dueAt || selectedDay, allDay: quickParsed.dueAt ? quickParsed.allDay : true })}</strong>
+            </div>
+          )}
           <div className="calendar-side-list">
             {selectedTasks.length === 0 ? (
               <div className="calendar-side-empty">

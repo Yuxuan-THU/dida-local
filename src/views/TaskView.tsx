@@ -377,7 +377,6 @@ export function TaskView({
               { label: '按优先级排序', icon: <PriorityFlag priority={3} />, checked: sortMode === 'priority', onClick: () => setSortMode('priority') },
               { label: '按日期排序', icon: <CalendarRange size={14} />, checked: sortMode === 'due', onClick: () => setSortMode('due') },
               { label: '按名称排序', icon: <ListTodo size={14} />, checked: sortMode === 'title', onClick: () => setSortMode('title') },
-              ...(view.kind === 'today' ? [{ separator: true, label: '' }, { label: '顺延所有过期任务', icon: <ArrowRight size={14} />, onClick: postponeAllOverdue }] : []),
               ...(listForView
                 ? [
                     { separator: true, label: '' },

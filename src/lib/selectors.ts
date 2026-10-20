@@ -42,7 +42,7 @@ export function tasksForView(state: AppState, view: View): Task[] {
         (t) =>
           !t.deletedAt &&
           t.status !== 'abandoned' &&
-          ((t.dueAt && t.dueAt.slice(0, 10) <= dateKey()) ||
+          (t.dueAt?.slice(0, 10) === dateKey() ||
             (t.status === 'completed' && t.completedAt?.slice(0, 10) === dateKey())),
       );
     case 'next7': {
@@ -107,7 +107,7 @@ export function computeCounts(state: AppState): TaskCounts {
       counts.completed += 1;
       continue;
     }
-    if (task.dueAt && task.dueAt.slice(0, 10) <= today) counts.today += 1;
+    if (task.dueAt && task.dueAt.slice(0, 10) === today) counts.today += 1;
     if (task.dueAt && task.dueAt.slice(0, 10) <= end) counts.next7 += 1;
     if (task.listId === 'inbox') counts.inbox += 1;
     counts.lists[task.listId] = (counts.lists[task.listId] || 0) + 1;
@@ -134,14 +134,9 @@ export function groupTasks(view: View, tasks: Task[]): Group[] {
   const today = dateKey();
 
   if (view.kind === 'today') {
-    const overdue = open.filter((t) => t.dueAt && t.dueAt.slice(0, 10) < today);
     const todays = open.filter((t) => t.dueAt?.slice(0, 10) === today);
-    const noDate = open.filter((t) => !t.dueAt);
     const groups: Group[] = [];
-    if (overdue.length)
-      groups.push({ key: 'overdue', label: '已过期', tone: 'danger', tasks: overdue, collapsible: true, count: overdue.length });
     groups.push({ key: 'today', label: '今天', tasks: todays, collapsible: true, count: todays.length });
-    if (noDate.length) groups.push({ key: 'nodate', label: '无日期', tone: 'muted', tasks: noDate, collapsible: true, defaultCollapsed: true, count: noDate.length });
     if (completed.length)
       groups.push({ key: 'completed', label: '已完成', tone: 'muted', tasks: completed, collapsible: true, defaultCollapsed: true, count: completed.length });
     return groups;
