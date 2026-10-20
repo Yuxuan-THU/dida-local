@@ -282,52 +282,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
           />
         </div>
 
-        <div className="detail-section">
-          <div className="detail-section-head">
-            <span><CheckSquare size={14} /> 子任务</span>
-            {task.subtasks.length > 0 && <span className="muted">{subtaskDone}/{task.subtasks.length}</span>}
-          </div>
-          {task.subtasks.length > 0 && (
-            <div className="subtask-progress"><span style={{ width: `${(subtaskDone / task.subtasks.length) * 100}%` }} /></div>
-          )}
-          <div className="subtasks">
-            {task.subtasks.map((sub) => (
-              <div className={cx('subtask-row', sub.done && 'is-done')} key={sub.id}>
-                <Checkbox checked={sub.done} size="small" onChange={(next) => updateSubtask(sub.id, next)} ariaLabel="完成子任务" />
-                <span>{sub.title}</span>
-                <button className="subtask-delete" onClick={() => removeSubtask(sub.id)} aria-label="删除子任务">
-                  <X size={12} />
-                </button>
-              </div>
-            ))}
-          </div>
-          {addingSubtask ? (
-            <div className="subtask-add-row">
-              <Plus size={14} />
-              <input
-                value={subtaskDraft}
-                onChange={(event) => setSubtaskDraft(event.target.value)}
-                placeholder="子任务标题，回车添加"
-                autoFocus
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') addSubtask();
-                  if (event.key === 'Escape') {
-                    setAddingSubtask(false);
-                    setSubtaskDraft('');
-                  }
-                }}
-                onBlur={() => {
-                  if (!subtaskDraft.trim()) setAddingSubtask(false);
-                }}
-              />
-            </div>
-          ) : (
-            <button className="add-subtask" onClick={() => setAddingSubtask(true)}>
-              <Plus size={14} /> 添加子任务
-            </button>
-          )}
-        </div>
-
         <div className="detail-fields">
           <Popover
             width={330}
@@ -357,54 +311,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
           <Popover
             width={220}
             trigger={() => (
-              <button className={cx('detail-field', task.priority > 0 && 'has-value')}>
-                <Flag size={16} color={task.priority ? PRIORITY_META[task.priority].color : undefined} fill={task.priority ? PRIORITY_META[task.priority].color : 'none'} />
-                <span className="detail-field-label">优先级</span>
-                <span className="detail-field-value" style={task.priority ? { color: PRIORITY_META[task.priority].color } : undefined}>
-                  {PRIORITY_META[task.priority].label}
-                </span>
-                <ChevronRight size={14} />
-              </button>
-            )}
-          >
-            {(close) => (
-              <PriorityMenu
-                value={task.priority}
-                onChange={(priority) => {
-                  patchTask(task.id, { priority });
-                  close();
-                }}
-              />
-            )}
-          </Popover>
-
-          <Popover
-            width={250}
-            trigger={() => (
-              <button className="detail-field">
-                <TagIcon size={16} />
-                <span className="detail-field-label">标签</span>
-                <span className="detail-field-value">
-                  {task.tags.length ? (
-                    <span className="detail-tags">
-                      {task.tags.map((tag) => (
-                        <TagPill key={tag} name={tag} color={tagColor(tag)} small />
-                      ))}
-                    </span>
-                  ) : (
-                    '添加标签'
-                  )}
-                </span>
-                <ChevronRight size={14} />
-              </button>
-            )}
-          >
-            {(close) => <TagPicker task={task} onDone={close} />}
-          </Popover>
-
-          <Popover
-            width={220}
-            trigger={() => (
               <button className="detail-field">
                 <Bell size={16} />
                 <span className="detail-field-label">提醒</span>
@@ -429,41 +335,6 @@ export function DetailPane({ taskId, onClose }: { taskId: string; onClose: () =>
               />
             )}
           </Popover>
-
-          <Popover
-            width={220}
-            trigger={() => (
-              <button className="detail-field">
-                <Repeat2 size={16} />
-                <span className="detail-field-label">重复</span>
-                <span className={cx('detail-field-value', task.repeatRule && 'is-strong')}>
-                  {task.repeatRule ? repeatLabel(task.repeatRule) : '不重复'}
-                </span>
-                <ChevronRight size={14} />
-              </button>
-            )}
-          >
-            {(close) => (
-              <RepeatMenu
-                value={task.repeatRule}
-                onChange={(rule: RepeatRule | null) => {
-                  patchTask(task.id, { repeatRule: rule });
-                  close();
-                }}
-              />
-            )}
-          </Popover>
-
-          <div className="detail-field">
-            <Timer size={16} />
-            <span className="detail-field-label">番茄钟</span>
-            <span className="detail-field-value">预计 {task.estimate || 0} 个</span>
-            <div className="stepper">
-              <button onClick={() => patchTask(task.id, { estimate: Math.max(0, task.estimate - 1) })} disabled={task.estimate <= 0}>−</button>
-              <span>{task.estimate || 0}</span>
-              <button onClick={() => patchTask(task.id, { estimate: Math.min(12, task.estimate + 1) })} disabled={task.estimate >= 12}>+</button>
-            </div>
-          </div>
         </div>
 
         <div className="detail-footer">
